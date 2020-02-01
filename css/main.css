@@ -1,0 +1,157 @@
+html {
+    background: #e6e9e9;
+}
+
+body {
+    background: #fff;
+    box-shadow: 0 0 2px rgba(0, 0, 0, 0.06);
+    color: #545454;
+    font-size: 16px;
+    line-height: 1.5;
+    width: 100%;
+    max-width: 800px;
+    padding: 2em 2em 2em;
+    margin: 0 auto;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    color: #222;
+    line-height: 1.3;
+}
+
+h2 {
+    margin-top: 1.3em;
+}
+
+a {
+    color: #0083e8;
+}
+
+b, strong {
+    font-weight: 600;
+}
+
+div.calc {
+    max-width: 500px;
+}
+
+.spinner {
+    text-align: center;
+}
+
+.spinner button,input {
+    text-align: center;
+    margin-bottom: 0;
+}
+
+.spinner button:first-of-type {
+    float: left;
+}
+.spinner button:last-of-type {
+    float: right;
+}
+
+.gear div {
+    text-align: center;
+}
+
+.gear div:first-of-type {
+    float:left;
+    width:50%;
+    padding-right: 5px;
+}
+.gear div:last-of-type {
+    float:right;
+    width:50%;
+    padding-left: 5px;
+}
+
+input.spinner-input {
+    border: 0;
+    font-size: 20px;
+    height: 50px;
+    line-height: 50px;
+    text-align: center;
+    width: 30px;
+    padding: 0;
+}
+
+button.spinner-button {
+    font-size: 20px;
+    height: 50px;
+    padding: 0;
+    width: 40px;
+}
+
+button.spinner-button-main {
+    background-color: #ed145f;
+    border: 0.1rem solid #ed145f;
+}
+
+button.spinner-button-sub {
+    background-color: #1f69e0;
+    border: 0.1rem solid #1f69e0;
+}
+
+input[type=number]::-webkit-inner-spin-button,
+input[type=number]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+input[type="number"] {
+  -moz-appearance: textfield;
+}
+
+.label {
+    line-height: 50px;
+}
+
+.select input{
+	display: none;
+}
+.select label{
+	display: block;
+	float: left;
+	cursor: pointer;
+	width: 50%;
+    height: 50px;
+	margin: 0;
+	padding: 0px 5px;
+	border-right: 1px solid #abb2b7;
+	background: #bdc3c7;
+	color: #555e64;
+	font-size: 14px;
+	text-align: center;
+	line-height: 50px;
+	transition: .2s;
+}
+
+.select-2 label{
+    width: 50%;
+}
+.select-3 label{
+    width : 33.33333% ; /* 未対応ブラウザ用フォールバック */
+    width : -webkit-calc(100% / 3) ;
+    width : calc(100% / 3) ;
+}
+
+.select label:first-of-type{
+	border-radius: 4px 0 0 4px;
+}
+.select label:last-of-type{
+	border-right: 0px;
+	border-radius: 0 4px 4px 0;
+}
+.select input[type="radio"]:checked + label {
+	background-color: #a1b91d;
+	color: #fff;
+}
+
+.row {
+    padding-bottom: 0.5rem;
+}
+
+.result {
+    font-size: 30px;
+}

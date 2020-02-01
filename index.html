@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html>
+    
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <title>Lunalculator(ノヴァ計算機)</title>
+        <meta name="description" content="An caluculator of Luna Blaster.">
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300italic,700,700italic">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/milligram/1.3.0/milligram.css">
+        <link rel="stylesheet" href="./css/main.css">
+
+        <script src="./js/vue.js"></script>
+        <script src="./js/vue-number-input-spinner.min.js"></script>
+        <!-- <script type="text/javascript" src="./js/main.js"></script> -->
+    </head>
+    
+    <body>
+        <h1>Lunalculator(ノヴァ計算機)</h1>
+        <div id="app">
+            <div class="container calc">
+                <div class="row">
+                    <div class="column column-25 label">サブ回数</div>
+                    <div class="column spinner">
+                        <number-input-spinner
+                            :min="0"
+                            :max="2"
+                            :step="1"
+                            :input-class="'spinner-input'"
+                            :button-class="'spinner-button'"
+                            :integer-only="true"
+                            v-model="subNumber"
+                        ></number-input-spinner>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="column column-25 label">ギア制限</div>
+                    <div class="column">
+                        <div class="select select-2">
+                            <input type="radio" name="gear-restr" id="gear-restr-off" value="off" checked="" v-model="gearRestr">
+                            <label for="gear-restr-off">なし</label>
+                            <input type="radio" name="gear-restr" id="gear-restr-on" value="on" v-model="gearRestr">
+                            <label for="gear-restr-on">あり(甲子園ギア)</label>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="column column-25 label">特殊ギア</div>
+                    <div class="column">
+                        <div class="select select-3">
+                            <input type="radio" name="unique-gear" id="unique-gear-none" value="none" checked="" v-model="uniqueGear">
+                            <label for="unique-gear-none">なし</label>
+                            <input type="radio" name="unique-gear" id="unique-gear-cb" value="cb" v-model="uniqueGear">
+                            <label for="unique-gear-cb">カムバック</label>
+                            <input type="radio" name="unique-gear" id="unique-gear-ls" value="ls" v-model="uniqueGear">
+                            <label for="unique-gear-ls">ラストスパート</label>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="column column-25 label">メイン効率</div>
+                    <div class="column spinner gear">
+                        <number-input-spinner
+                            :min="0"
+                            :max="3"
+                            :step="1"
+                            :input-class="'spinner-input'"
+                            :button-class="'spinner-button spinner-button-main'"
+                            :integer-only="true"
+                            v-model="gearMainL"
+                        ></number-input-spinner>
+                        <number-input-spinner
+                            :min="0"
+                            :max="9"
+                            :step="1"
+                            :input-class="'spinner-input'"
+                            :button-class="'spinner-button spinner-button-main'"
+                            :integer-only="true"
+                            v-model="gearMainS"
+                        ></number-input-spinner>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="column column-25 label">サブ効率</div>
+                    <div class="column spinner gear">
+                        <number-input-spinner
+                            :min="0"
+                            :max="3"
+                            :step="1"
+                            :input-class="'spinner-input'"
+                            :button-class="'spinner-button spinner-button-sub'"
+                            :integer-only="true"
+                            v-model="gearSubL"
+                        ></number-input-spinner>
+                        <number-input-spinner
+                            :min="0"
+                            :max="9"
+                            :step="1"
+                            :input-class="'spinner-input'"
+                            :button-class="'spinner-button spinner-button-sub'"
+                            :integer-only="true"
+                            v-model="gearSubS"
+                        ></number-input-spinner>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="column column-25"></div>
+                    <div class="column gear">
+                        <div>大</div>
+                        <div>小</div>
+                    </div>
+                </div>
+            <div class="result">
+                {{fireNumber}}{{ message }}(+{{fireNumberIncrement}})
+            </div>
+            </div>
+        </div>
+
+        <script>
+            Vue.component('number-input-spinner', NumberInputSpinner);
+
+            var app = new Vue({
+                el: "#app",
+                data:{
+                    fireNumberIncrement: 0,
+                    fireNumber: 13,
+                    message: "発撃てます",
+                    subNumber: 0,
+                    gearRestr: "off",
+                    uniqueGear: "none",
+                    gearMainL: 0,
+                    gearMainS: 0,
+                    gearSubL: 0,
+                    gearSubS: 0,
+                },
+                updated: function() {
+                    this.fireNumber = this.calcFireNumber(this.subNumber,this.gearRestr,this.uniqueGear,this.gearMainL,this.gearMainS,this.gearSubL,this.gearSubs)
+                    this.fireNumberIncrement = this.fireNumber - this.calcFireNumber(this.subNumber,this.gearRestr,this.uniqueGear,0,0,0,0)
+                },
+                methods: {
+                    calcFireNumber: function(subNumber, gearRestr, uniqueGear, gearMainL, gearMainS, gearSubL, gearSubS) {
+                        gearMain57 = 10 * gearMainL + 3 * gearMainS
+                        gearSub57 = 10 * gearSubL + 3 * gearSubS
+                        mainCost = (1 - 0.5 * ((0.033 * gearMain57 - 0.00027 * (gearMain57 ** 2)) ** (Math.log(0.6) / Math.log(0.5)))) * 0.075
+                        fireNumber = Math.floor(1 / mainCost)
+                        return(fireNumber)
+                    }
+                }
+            })
+            
+        </script>
+    </body>
+</html>
