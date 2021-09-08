@@ -10,7 +10,7 @@
             :options="subNumberOptions"
             :aria-describedby="ariaDescribedby"
             button-variant="outline-primary"
-            size="lg"
+            size="md"
             name="radio-btn-outline"
             buttons
           ></b-form-radio-group>
@@ -27,7 +27,7 @@
             :options="uniqueGearOptions"
             :aria-describedby="ariaDescribedby"
             button-variant="outline-primary"
-            size="lg"
+            size="md"
             name="radio-btn-outline"
             buttons
           ></b-form-radio-group>
@@ -42,7 +42,7 @@
           v-model="gearMainL"
           min="0"
           :max=gearLLimit
-          size="lg"
+          size="md"
         ></b-form-spinbutton>
       </b-col>
       <b-col cols="4">
@@ -51,7 +51,7 @@
           v-model="gearMainS"
           min="0"
           max="9"
-          size="lg"
+          size="md"
         ></b-form-spinbutton>
       </b-col>
     </b-row>
@@ -63,7 +63,7 @@
           v-model="gearSubL"
           min="0"
           :max=gearLLimit
-          size="lg"
+          size="md"
         ></b-form-spinbutton>
       </b-col>
       <b-col cols="4">
@@ -72,7 +72,7 @@
           v-model="gearSubS"
           min="0"
           max="9"
-          size="lg"
+          size="md"
         ></b-form-spinbutton>
       </b-col>
     </b-row>
