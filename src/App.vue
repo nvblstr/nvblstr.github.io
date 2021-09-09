@@ -1,6 +1,6 @@
 <template>
   <div id="app">
-    <h1>LunaCalculator (ノヴァ計算機)</h1>
+    <h1>LunaCalculator(ノヴァ計算機)</h1>
     <Calculator />
   </div>
 </template>
@@ -24,6 +24,6 @@ export default {
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
   color: #2c3e50;
-  margin-top: 25px;
+  margin-top: 20px;
 }
 </style>

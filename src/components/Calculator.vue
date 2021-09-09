@@ -258,28 +258,28 @@ a {
 }
 .label {
   text-align: left;
-  margin-top: 2px;
+  margin-top: 1px;
   font-size: 20px;
 }
 .label-normal {
-  padding: 0.25em 0.5em;/*上下 左右の余白*/
+  padding: 0.2em 0.5em;/*上下 左右の余白*/
   background: transparent;/*背景透明に*/
   border-left: solid 6px teal;/*左線*/
 }
 .label-main {
-  padding: 0.25em 0.5em;/*上下 左右の余白*/
+  padding: 0.2em 0.5em;/*上下 左右の余白*/
   background: transparent;/*背景透明に*/
   border-left: solid 6px #ee7a76;/*左線*/
 }
 .label-sub {
-  padding: 0.25em 0.5em;/*上下 左右の余白*/
+  padding: 0.2em 0.5em;/*上下 左右の余白*/
   background: transparent;/*背景透明に*/
   border-left: solid 6px #7db4e6;/*左線*/
 }
 
 .result strong {
-  background: linear-gradient(transparent 60%, #ffff66 60%);
-  font-size: 1.5em;
+  background: linear-gradient(transparent 70%, #ffff66 60%);
+  font-size: 1.5rem;
 }
 .btn-radio {
   width: 100%;
