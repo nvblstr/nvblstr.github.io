@@ -42,22 +42,22 @@
       <b-col class="label label-main">メイン効率</b-col>
     </b-row>
     <b-row>
-      <b-col cols="6">
+      <b-col class="col-justify">
         <b-form-spinbutton
-          class="spin-gear"
+          class="gear-spin"
           v-model="gearMainL"
           min="0"
           :max=gearLLimit
           size="lg"
+          inline
         ></b-form-spinbutton>
-      </b-col>
-      <b-col cols="6">
         <b-form-spinbutton
-          class="spin-gear"
+          class="gear-spin"
           v-model="gearMainS"
           min="0"
           max="9"
           size="lg"
+          inline
         ></b-form-spinbutton>
       </b-col>
     </b-row>
@@ -65,22 +65,22 @@
       <b-col class="label label-sub">サブ効率</b-col>
     </b-row>
     <b-row>
-      <b-col cols="6">
+      <b-col class="col-justify">
         <b-form-spinbutton
-          class="spin-gear"
+          class="gear-spin"
           v-model="gearSubL"
           min="0"
           :max=gearLLimit
           size="lg"
+          inline
         ></b-form-spinbutton>
-      </b-col>
-      <b-col cols="6">
         <b-form-spinbutton
-          class="spin-gear"
+          class="gear-spin"
           v-model="gearSubS"
           min="0"
           max="9"
           size="lg"
+          inline
         ></b-form-spinbutton>
       </b-col>
     </b-row>
@@ -239,9 +239,6 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
-h2 {
-  margin: 40px 0 0;
-}
 ul {
   list-style-type: none;
   padding: 0;
@@ -261,7 +258,7 @@ a {
 }
 .label {
   text-align: left;
-  margin-top: 10px;
+  margin-top: 2px;
   font-size: 20px;
 }
 .label-normal {
@@ -287,6 +284,13 @@ a {
 .btn-radio {
   width: 100%;
   display: flex;
+}
+.gear-spin {
+  width: 49% !important;
+}
+.col-justify {
+  display: flex;
+  justify-content: space-between;
 }
 ::v-deep .btn-radio label {
   display: flex;
