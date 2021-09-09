@@ -1,7 +1,9 @@
 <template>
   <b-container id="container" fluid="xs">
     <b-row>
-      <b-col class="label" cols="4">サブ回数</b-col>
+      <b-col class="label label-normal">サブ回数</b-col>
+    </b-row>
+    <b-row>
       <b-col>
         <b-form-group v-slot="{ ariaDescribedby }">
           <b-form-radio-group
@@ -10,7 +12,7 @@
             :options="subNumberOptions"
             :aria-describedby="ariaDescribedby"
             button-variant="outline-primary"
-            size="md"
+            size="lg"
             name="radio-btn-outline"
             buttons
           ></b-form-radio-group>
@@ -18,7 +20,9 @@
       </b-col>
     </b-row>
     <b-row>
-      <b-col class="label" cols="4">特殊ギア</b-col>
+      <b-col class="label label-normal">特殊ギア</b-col>
+    </b-row>
+    <b-row>
       <b-col>
         <b-form-group v-slot="{ ariaDescribedby }">
           <b-form-radio-group
@@ -27,7 +31,7 @@
             :options="uniqueGearOptions"
             :aria-describedby="ariaDescribedby"
             button-variant="outline-primary"
-            size="md"
+            size="lg"
             name="radio-btn-outline"
             buttons
           ></b-form-radio-group>
@@ -35,50 +39,54 @@
       </b-col>
     </b-row>
     <b-row>
-      <b-col class="label" cols="4">メイン効率</b-col>
-      <b-col cols="4">
+      <b-col class="label label-main">メイン効率</b-col>
+    </b-row>
+    <b-row>
+      <b-col cols="6">
         <b-form-spinbutton
           class="spin-gear"
           v-model="gearMainL"
           min="0"
           :max=gearLLimit
-          size="md"
+          size="lg"
         ></b-form-spinbutton>
       </b-col>
-      <b-col cols="4">
+      <b-col cols="6">
         <b-form-spinbutton
           class="spin-gear"
           v-model="gearMainS"
           min="0"
           max="9"
-          size="md"
+          size="lg"
         ></b-form-spinbutton>
       </b-col>
     </b-row>
     <b-row>
-      <b-col class="label" cols="4">サブ効率</b-col>
-      <b-col cols="4">
+      <b-col class="label label-sub">サブ効率</b-col>
+    </b-row>
+    <b-row>
+      <b-col cols="6">
         <b-form-spinbutton
           class="spin-gear"
           v-model="gearSubL"
           min="0"
           :max=gearLLimit
-          size="md"
+          size="lg"
         ></b-form-spinbutton>
       </b-col>
-      <b-col cols="4">
+      <b-col cols="6">
         <b-form-spinbutton
           class="spin-gear"
           v-model="gearSubS"
           min="0"
           max="9"
-          size="md"
+          size="lg"
         ></b-form-spinbutton>
       </b-col>
     </b-row>
     <b-row>
-      <b-col cols="4" offset="4">大</b-col>
-      <b-col cols="4">小</b-col>
+      <b-col cols="6">大</b-col>
+      <b-col cols="6">小</b-col>
     </b-row>
     <b-row>
       <b-col class="result">
@@ -231,7 +239,7 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
-h3 {
+h2 {
   margin: 40px 0 0;
 }
 ul {
@@ -249,13 +257,29 @@ a {
   margin-left: auto;
   margin-right: auto;
   margin-bottom: 2px;
-  max-width: 500px;
+  max-width: 400px;
 }
 .label {
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  text-align: left;
+  margin-top: 10px;
+  font-size: 20px;
 }
+.label-normal {
+  padding: 0.25em 0.5em;/*上下 左右の余白*/
+  background: transparent;/*背景透明に*/
+  border-left: solid 6px teal;/*左線*/
+}
+.label-main {
+  padding: 0.25em 0.5em;/*上下 左右の余白*/
+  background: transparent;/*背景透明に*/
+  border-left: solid 6px #ee7a76;/*左線*/
+}
+.label-sub {
+  padding: 0.25em 0.5em;/*上下 左右の余白*/
+  background: transparent;/*背景透明に*/
+  border-left: solid 6px #7db4e6;/*左線*/
+}
+
 .result strong {
   background: linear-gradient(transparent 60%, #ffff66 60%);
   font-size: 1.5em;

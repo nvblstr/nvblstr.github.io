@@ -1,6 +1,6 @@
 <template>
   <div id="app">
-    <h2>LunaCalculator (ノヴァ計算機)</h2>
+    <h1>LunaCalculator (ノヴァ計算機)</h1>
     <Calculator />
   </div>
 </template>
