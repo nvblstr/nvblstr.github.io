@@ -254,12 +254,13 @@ a {
   margin-left: auto;
   margin-right: auto;
   margin-bottom: 2px;
+  padding: 0px 10px;
   max-width: 400px;
 }
 .label {
   text-align: left;
   margin-top: 1px;
-  font-size: 20px;
+  font-size: 18px;
 }
 .label-normal {
   padding: 0.2em 0.5em;/*上下 左右の余白*/
@@ -287,6 +288,7 @@ a {
 }
 .gear-spin {
   width: 49% !important;
+  margin-bottom: 0.5rem;
 }
 .col-justify {
   display: flex;
