@@ -4,6 +4,7 @@ import { fileURLToPath, URL } from 'node:url'
 
 // https://vite.dev/config/
 export default defineConfig({
+  base: '/',  // ルートパスに変更
   plugins: [vue()],
   resolve: {
     alias: {
@@ -13,5 +14,10 @@ export default defineConfig({
   server: {
     port: 5500,
     host: true
+  },
+  build: {
+    outDir: 'dist',
+    assetsDir: 'assets',
+    sourcemap: true
   }
 })
