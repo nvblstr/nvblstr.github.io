@@ -3,6 +3,30 @@
   <BContainer fluid="sm">
     <!-- 入力セクション -->
     <div class="input-section">
+      <!-- ブキセクション -->
+      <BRow class="section-row">
+        <BCol class="label label-weapon">
+          <i class="bi bi-crosshair label-icon"></i>
+          ブキ
+        </BCol>
+      </BRow>
+      <BRow>
+        <BCol>
+          <BFormGroup>
+            <!-- ブキのラジオボタン（無印、ネオ） -->
+            <BFormRadioGroup
+              class="btn-radio"
+              v-model="weaponType"
+              :options="weaponTypeOptions"
+              button-variant="outline-primary"
+              size="lg"
+              name="weapon-type-radio"
+              buttons
+            />
+          </BFormGroup>
+        </BCol>
+      </BRow>
+
       <!-- サブ回数セクション -->
       <BRow class="section-row">
         <BCol class="label label-number">
@@ -141,10 +165,10 @@
         <BCard
           :bg-variant="ink > 0 ? 'light' : 'warning'"
           :text-variant="ink > 0 ? 'dark' : 'dark'"
-          class="shadow-sm"
+          class="shadow-sm result-card"
         >
           <!-- インクが十分な場合の表示 -->
-          <div v-if="ink > 0" class="d-flex flex-column gap-2">
+          <div v-if="ink > 0" class="result-content">
             <div class="d-flex align-items-baseline justify-content-center gap-2">
               <strong class="display-5 text-dark">{{ fireNumber }}</strong>
               <span class="fs-5 text-secondary">{{ fireNumberMessage }}</span>
@@ -158,7 +182,7 @@
             </div>
           </div>
           <!-- インクが不足している場合の表示 -->
-          <div v-else class="text-center">
+          <div v-else class="result-content">
             <strong class="fs-5">
               {{ notEnoughMessage1 }}{{ subNumber }}{{ notEnoughMessage2 }}
             </strong>
@@ -172,12 +196,15 @@
 <script lang="ts">
 import { ref, computed, watch } from "vue";
 import "bootstrap-icons/font/bootstrap-icons.css";
+import { useDarkMode } from "../composables/useDarkMode";
 
 // ===== 型定義 =====
 // サブ回数の型（0, 1, 2回）
 type SubNumber = 0 | 1 | 2;
 // 特殊ギアの型（なし、カムバック、ラストスパート）
 type UniqueGear = "none" | "comeback" | "lastspurt";
+// ブキの型（無印、ネオ）
+type WeaponType = "normal" | "neo";
 
 // サブ回数のオプション型
 interface SubNumberOption {
@@ -193,6 +220,13 @@ interface UniqueGearOption {
   [key: string]: unknown;
 }
 
+// ブキのオプション型
+interface WeaponTypeOption {
+  text: string;
+  value: WeaponType;
+  [key: string]: unknown;
+}
+
 // ===== 定数 =====
 // 表示メッセージ
 const FIRE_NUMBER_MESSAGE = "発撃てます";
@@ -200,10 +234,11 @@ const NOT_ENOUGH_MESSAGE_1 = "今のギアパワーではサブウェポンは";
 const NOT_ENOUGH_MESSAGE_2 = "回使えません";
 
 // 基本コスト
-const MAIN_COST_BASE = 0.075; // メイン武器の基本コスト
-const SUB_COST_BASE = 0.7; // サブ武器の基本コスト
+const MAIN_COST_BASE = 0.075; // メインブキの基本コスト
 
 // ===== リアクティブな状態 =====
+// ブキの選択値
+const weaponType = ref<WeaponType>("normal");
 // サブ回数の選択値
 const subNumber = ref<SubNumber>(0);
 // 特殊ギアの選択値
@@ -218,6 +253,12 @@ const gearSubL = ref<number>(0);
 const gearSubS = ref<number>(0);
 
 // ===== オプション設定 =====
+// ブキの選択肢
+const weaponTypeOptions: WeaponTypeOption[] = [
+  { text: "無印", value: "normal" },
+  { text: "ネオ", value: "neo" },
+];
+
 // サブ回数の選択肢
 const subNumberOptions: SubNumberOption[] = [
   { text: "0", value: 0 },
@@ -233,9 +274,19 @@ const uniqueGearOptions: UniqueGearOption[] = [
 ];
 
 // ===== 計算ロジック =====
+
+// サブブキの基本コスト
+const subCostBase = computed((): number => {
+  if (weaponType.value === "normal") {
+    return 0.7; // ノヴァ無印のサブ(スプラッシュボム)のコスト
+  } else {
+    return 0.6; // ノヴァネオのサブ(タンサンボム)のコスト
+  }
+});
+
 // 特殊ギアによるギアパワー増加量の計算
-const calcGearPowerIncrement = (uniqueGear: UniqueGear): number => {
-  switch (uniqueGear) {
+const calcGearPowerIncrement = computed((): number => {
+  switch (uniqueGear.value) {
     case "none":
       return 0;
     case "comeback":
@@ -245,23 +296,19 @@ const calcGearPowerIncrement = (uniqueGear: UniqueGear): number => {
     default:
       return 0;
   }
-};
+});
 
 // メイン効率の57表記の計算
 const gearMain57 = computed((): number => {
   return (
-    10 * gearMainL.value +
-    3 * gearMainS.value +
-    calcGearPowerIncrement(uniqueGear.value)
+    10 * gearMainL.value + 3 * gearMainS.value + calcGearPowerIncrement.value
   );
 });
 
 // サブ効率の57表記の計算
 const gearSub57 = computed((): number => {
   return (
-    10 * gearSubL.value +
-    3 * gearSubS.value +
-    calcGearPowerIncrement(uniqueGear.value)
+    10 * gearSubL.value + 3 * gearSubS.value + calcGearPowerIncrement.value
   );
 });
 
@@ -278,10 +325,19 @@ const mainCost = computed((): number => {
 
 // サブ武器のインク消費量の計算
 const subCost = computed((): number => {
-  return (
-    (1 - 0.35 * (0.033 * gearSub57.value - 0.00027 * gearSub57.value ** 2)) *
-    SUB_COST_BASE
-  );
+  if (weaponType.value === "normal") {
+    // ノヴァ無印のサブ(スプラッシュボム)のコスト
+    return (
+      (1 - 0.35 * (0.033 * gearSub57.value - 0.00027 * gearSub57.value ** 2)) *
+      subCostBase.value
+    );
+  } else {
+    // ノヴァネオのサブ(タンサンボム)のコスト
+    return (
+      (1 - 0.3 * (0.033 * gearSub57.value - 0.00027 * gearSub57.value ** 2)) *
+      subCostBase.value
+    );
+  }
 });
 
 // 発射可能回数の計算
@@ -300,10 +356,10 @@ const fireNumber = computed((): number => {
 
 // ギアパワーによる発射回数増加量の計算
 const fireNumberIncrement = computed((): number => {
-  if (calcFireNumber(MAIN_COST_BASE, SUB_COST_BASE, subNumber.value) >= 0) {
+  if (calcFireNumber(MAIN_COST_BASE, subCostBase.value, subNumber.value) >= 0) {
     return (
       fireNumber.value -
-      calcFireNumber(MAIN_COST_BASE, SUB_COST_BASE, subNumber.value)
+      calcFireNumber(MAIN_COST_BASE, subCostBase.value, subNumber.value)
     );
   }
   return fireNumber.value;
@@ -325,6 +381,17 @@ const notEnoughMessage1 = computed((): string => NOT_ENOUGH_MESSAGE_1);
 const notEnoughMessage2 = computed((): string => NOT_ENOUGH_MESSAGE_2);
 
 // ===== ウォッチャー =====
+// ブキタイプが変更された時の処理
+const { toggle } = useDarkMode();
+
+watch(weaponType, (newValue) => {
+  if (newValue === "neo") {
+    toggle();
+  } else {
+    toggle();
+  }
+});
+
 // メイン効率の大スロット値が変更された時の処理
 watch(gearMainL, () => {
   if (Number(gearMainL.value) + Number(gearSubL.value) > gearLLimit.value) {
@@ -368,6 +435,8 @@ export default {
   name: "Calculator",
   setup() {
     return {
+      weaponType,
+      weaponTypeOptions,
       subNumber,
       uniqueGear,
       gearMainL,
@@ -390,7 +459,6 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
-
 /* 入力セクション
  * フォーム要素を含むメインの入力エリア
  * 上部に余白を設定し、幅をコンテナに合わせる
@@ -409,7 +477,7 @@ export default {
   .display-4 {
     font-size: 2.5rem;
   }
-  
+
   .fs-5 {
     font-size: 1rem !important;
   }
@@ -462,10 +530,34 @@ export default {
   box-shadow: 0 2px 4px rgba(22, 101, 52, 0.15);
 }
 
+[data-bs-theme="dark"] .label-number {
+  background: linear-gradient(to bottom, #064e3b, #065f46);
+  color: #d1fae5;
+  box-shadow: 0 2px 4px rgba(6, 95, 70, 0.3);
+}
+
+.label-weapon {
+  background: linear-gradient(to bottom, #fef2f2, #fee2e2);
+  color: #991b1b;
+  box-shadow: 0 2px 4px rgba(220, 38, 38, 0.15);
+}
+
+[data-bs-theme="dark"] .label-weapon {
+  background: linear-gradient(to bottom, #7f1d1d, #991b1b);
+  color: #fecaca;
+  box-shadow: 0 2px 4px rgba(153, 27, 27, 0.3);
+}
+
 .label-unique {
   background: linear-gradient(to bottom, #f7f0ff, #eee3ff);
   color: #4c3c8a;
   box-shadow: 0 2px 4px rgba(128, 90, 213, 0.15);
+}
+
+[data-bs-theme="dark"] .label-unique {
+  background: linear-gradient(to bottom, #312e81, #4338ca);
+  color: #e0e7ff;
+  box-shadow: 0 2px 4px rgba(67, 56, 202, 0.3);
 }
 
 .label-main {
@@ -474,18 +566,30 @@ export default {
   box-shadow: 0 2px 4px rgba(237, 100, 166, 0.15);
 }
 
+[data-bs-theme="dark"] .label-main {
+  background: linear-gradient(to bottom, #831843, #be185d);
+  color: #fdebf6;
+  box-shadow: 0 2px 4px rgba(190, 24, 93, 0.3);
+}
+
 .label-sub {
   background: linear-gradient(to bottom, #e6f4ff, #b4d9f8);
   color: #2c5a9e;
   box-shadow: 0 2px 4px rgba(66, 153, 225, 0.15);
 }
 
+[data-bs-theme="dark"] .label-sub {
+  background: linear-gradient(to bottom, #1e3a8a, #2563eb);
+  color: #eef5fd;
+  box-shadow: 0 2px 4px rgba(37, 99, 235, 0.3);
+}
+
 /* ラベルのホバーエフェクト */
-.label:hover {
+/* .label:hover {
   transform: translateY(-1px);
   transition: transform 0.2s ease;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-}
+} */
 
 .label:hover .label-icon {
   opacity: 1;
@@ -521,15 +625,31 @@ export default {
   color: #4a5568 !important;
 }
 
+[data-bs-theme="dark"] :deep(.btn-radio label) {
+  border-color: #4a5568 !important;
+  color: #e2e8f0 !important;
+}
+
 :deep(.btn-radio label:hover) {
   background-color: #f1f5f9 !important;
   border-color: #cbd5e0 !important;
+}
+
+[data-bs-theme="dark"] :deep(.btn-radio label:hover) {
+  background-color: #2d3748 !important;
+  border-color: #4a5568 !important;
 }
 
 :deep(.btn-radio input[type="radio"]:checked + label) {
   background-color: #e2e8f0 !important;
   border-color: #cbd5e0 !important;
   color: #2d3748 !important;
+}
+
+[data-bs-theme="dark"] :deep(.btn-radio input[type="radio"]:checked + label) {
+  background-color: #4a5568 !important;
+  border-color: #2d3748 !important;
+  color: #e2e8f0 !important;
 }
 
 /* スピンボタンのレイアウト */
@@ -549,10 +669,21 @@ export default {
   color: #4a5568;
 }
 
+[data-bs-theme="dark"] :deep(.gear-spin .form-control) {
+  border-color: #4a5568;
+  color: #e2e8f0;
+  background-color: #2d3748;
+}
+
 :deep(.gear-spin .form-control:focus) {
   box-shadow: none;
   border-color: #cbd5e0;
   background-color: #f1f5f9;
+}
+
+[data-bs-theme="dark"] :deep(.gear-spin .form-control:focus) {
+  border-color: #4a5568;
+  background-color: #2d3748;
 }
 
 :deep(.gear-spin .btn) {
@@ -561,15 +692,33 @@ export default {
   background-color: #f1f5f9;
 }
 
+[data-bs-theme="dark"] :deep(.gear-spin .btn) {
+  color: #e2e8f0;
+  border-color: #4a5568;
+  background-color: #2d3748;
+}
+
 :deep(.gear-spin .btn:hover) {
   background-color: #e2e8f0;
   border-color: #cbd5e0;
   color: #2d3748;
 }
 
+[data-bs-theme="dark"] :deep(.gear-spin .btn:hover) {
+  background-color: #4a5568;
+  border-color: #2d3748;
+  color: #e2e8f0;
+}
+
 /* スロットサイズのラベル */
 .slot-label {
   color: #6c757d;
+  text-align: center;
+  display: block;
+}
+
+[data-bs-theme="dark"] .slot-label {
+  color: #a0aec0;
 }
 
 /* アイコンのスタイル */
@@ -615,6 +764,11 @@ export default {
   color: #b83280;
 }
 
+[data-bs-theme="dark"] .large-circle,
+[data-bs-theme="dark"] .small-circle {
+  color: #f472b6;
+}
+
 .top-right-circle {
   position: absolute;
   top: -0.7em;
@@ -656,7 +810,30 @@ export default {
   top: 0.2em;
 }
 
+[data-bs-theme="dark"] .large-triangle,
+[data-bs-theme="dark"] .small-triangle {
+  color: #60a5fa;
+}
+
 .label:hover .triangle-icon i {
   opacity: 1;
+}
+
+/* 結果表示カードのスタイル */
+.result-card {
+  height: 160px;
+}
+
+.result-card :deep(.card-body) {
+  height: 100%;
+  padding: 1.5rem;
+}
+
+.result-content {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
 }
 </style>

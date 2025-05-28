@@ -1,28 +1,26 @@
 <template>
-  <div id="lcalc">
-    <img alt="LunaCalculator" src="./assets/LunaCalculator3.png" />
-    <Calculator />
-  </div>
+  <Header />
+  <Calculator />
 </template>
 
 <script setup lang="ts">
 import Calculator from "./components/Calculator.vue";
+import Header from "./components/Header.vue";
 </script>
 
 <style>
-#lcalc {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
+:root {
   -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smothing: grayscale;
-  text-align: center;
+  -moz-osx-font-smoothing: grayscale;
   color: #2c3e50;
-  margin-top: 20px;
-  margin-bottom: 20px;
 }
 
-#lcalc img {
-  width: 320px;
-  max-width: 100%;
-  height: auto;
+body {
+  margin-top: 1rem;
+  margin-bottom: 2rem;
+}
+
+[data-bs-theme="dark"] {
+  color: #e2e8f0;
 }
 </style>
