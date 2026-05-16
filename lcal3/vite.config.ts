@@ -4,7 +4,7 @@ import { fileURLToPath, URL } from 'node:url'
 
 // https://vite.dev/config/
 export default defineConfig({
-  base: '/',  // ルートパスに変更
+  base: '/lcal3/',
   plugins: [vue()],
   resolve: {
     alias: {
