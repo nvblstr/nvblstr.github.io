@@ -1,22 +1,24 @@
-import Vue from "vue";
-import App from "./App.vue";
+import { createApp } from 'vue'
+import App from './App.vue'
+import {
+  BContainer,
+  BRow,
+  BCol,
+  BFormGroup,
+  BFormRadioGroup,
+  BFormSpinbutton,
+} from 'bootstrap-vue-next'
+import 'bootstrap/dist/css/bootstrap.css'
+import 'bootstrap-vue-next/dist/bootstrap-vue-next.css'
+import './style.css'
 
-// bootstrap-vueからBootstrapVue,IconPluginをインポートする
-import { BootstrapVue, IconsPlugin } from "bootstrap-vue"; // add
+const app = createApp(App)
 
-// Bootstrap と BootstrapVueのCSSファイルをインポート（順序はBootstrap⇒BootstrapVue）
-//import "bootstrap/dist/css/bootstrap.css"; // add
-//import "bootstrap-vue/dist/bootstrap-vue.css"; // add
-import "./assets/bootstrap-custom.scss"
+app.component('BContainer', BContainer)
+app.component('BRow', BRow)
+app.component('BCol', BCol)
+app.component('BFormGroup', BFormGroup)
+app.component('BFormRadioGroup', BFormRadioGroup)
+app.component('BFormSpinbutton', BFormSpinbutton)
 
-// BootstrapVueをプロジェクト全体で利用できるようにする
-Vue.use(BootstrapVue); // add
-
-// BootstrapVueアイコンコンポーネントプラグインの使用
-Vue.use(IconsPlugin); // add
-
-Vue.config.productionTip = false;
-
-new Vue({
-  render: (h) => h(App),
-}).$mount("#app");
+app.mount('#app')

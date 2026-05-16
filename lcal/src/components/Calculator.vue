@@ -1,16 +1,15 @@
 <template>
-  <b-container id="container" fluid="xs">
+  <BContainer id="container" fluid="sm">
     <b-row>
       <b-col class="label label-normal">サブ回数</b-col>
     </b-row>
     <b-row>
       <b-col>
-        <b-form-group v-slot="{ ariaDescribedby }">
+        <b-form-group>
           <b-form-radio-group
             class="btn-radio"
             v-model="subNumber"
             :options="subNumberOptions"
-            :aria-describedby="ariaDescribedby"
             button-variant="outline-primary"
             size="lg"
             name="radio-btn-outline"
@@ -24,12 +23,11 @@
     </b-row>
     <b-row>
       <b-col>
-        <b-form-group v-slot="{ ariaDescribedby }">
+        <b-form-group>
           <b-form-radio-group
             class="btn-radio"
             v-model="uniqueGear"
             :options="uniqueGearOptions"
-            :aria-describedby="ariaDescribedby"
             button-variant="outline-primary"
             size="lg"
             name="radio-btn-outline"
@@ -47,7 +45,7 @@
           class="gear-spin"
           v-model="gearMainL"
           min="0"
-          :max=gearLLimit
+          :max="gearLLimit"
           size="lg"
           inline
         ></b-form-spinbutton>
@@ -70,7 +68,7 @@
           class="gear-spin"
           v-model="gearSubL"
           min="0"
-          :max=gearLLimit
+          :max="gearLLimit"
           size="lg"
           inline
         ></b-form-spinbutton>
@@ -102,7 +100,7 @@
         </div>
       </b-col>
     </b-row>
-  </b-container>
+  </BContainer>
 </template>
 
 <script>
@@ -294,17 +292,17 @@ a {
   display: flex;
   justify-content: space-between;
 }
-::v-deep .btn-radio label {
+:deep(.btn-radio label) {
   display: flex;
   flex: 1;
 }
-::v-deep .btn-radio span {
+:deep(.btn-radio span) {
   display: flex;
   align-items: center;
   justify-content: center;
   flex: 1;
 }
-::v-deep .btn-radio input[type="radio"] {
+:deep(.btn-radio input[type="radio"]) {
   position: absolute;
   clip: rect(0, 0, 0, 0);
   pointer-events: none;

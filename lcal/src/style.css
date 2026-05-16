@@ -1,0 +1,19 @@
+:root {
+  color: #2c3e50;
+  font-family: Avenir, Helvetica, Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  margin: 0;
+}
+
+.btn-outline-primary {
+  --bs-btn-color: teal;
+  --bs-btn-border-color: teal;
+  --bs-btn-hover-bg: teal;
+  --bs-btn-hover-border-color: teal;
+  --bs-btn-active-bg: teal;
+  --bs-btn-active-border-color: teal;
+}
