@@ -15,14 +15,14 @@ Push-Location $repoRoot
 try {
   Push-Location (Join-Path $repoRoot "lcal")
   try {
-    npm run build
+    npm.cmd run build
   } finally {
     Pop-Location
   }
 
   Push-Location (Join-Path $repoRoot "lcal3")
   try {
-    npm run build
+    npm.cmd run build
   } finally {
     Pop-Location
   }
