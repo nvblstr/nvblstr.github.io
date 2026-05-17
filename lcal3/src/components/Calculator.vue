@@ -464,7 +464,7 @@ export default {
  * 上部に余白を設定し、幅をコンテナに合わせる
  */
 .input-section {
-  padding-top: 1rem;
+  padding-top: 0.75rem;
 }
 
 /* 結果表示セクションのカスタムスタイル */
@@ -607,8 +607,8 @@ export default {
  * 各セクション間に一定の間隔を設定
  */
 .section-row {
-  margin-top: 1rem;
-  margin-bottom: 0.5rem;
+  margin-top: 0.75rem;
+  margin-bottom: 0.4rem;
 }
 
 /* 最初のセクションのマージンを削除 */
@@ -944,7 +944,7 @@ export default {
 
 /* 結果表示カードのスタイル */
 .result-card {
-  height: 160px;
+  height: 150px;
 }
 
 .result-card :deep(.card-body) {
@@ -958,5 +958,28 @@ export default {
   flex-direction: column;
   justify-content: center;
   align-items: center;
+}
+
+@media (min-width: 577px) and (max-height: 800px) {
+  .input-section {
+    padding-top: 0.4rem;
+  }
+
+  .section-row {
+    margin-top: 0.5rem;
+    margin-bottom: 0.28rem;
+  }
+
+  .result-row {
+    margin-top: 1rem !important;
+  }
+
+  .result-card {
+    height: 132px;
+  }
+
+  .result-card :deep(.card-body) {
+    padding: 1rem;
+  }
 }
 </style>
