@@ -382,15 +382,15 @@ const notEnoughMessage2 = computed((): string => NOT_ENOUGH_MESSAGE_2);
 
 // ===== ウォッチャー =====
 // ブキタイプが変更された時の処理
-const { toggle } = useDarkMode();
+const { setDarkMode } = useDarkMode();
 
-watch(weaponType, (newValue) => {
-  if (newValue === "neo") {
-    toggle();
-  } else {
-    toggle();
-  }
-});
+watch(
+  weaponType,
+  (newValue) => {
+    setDarkMode(newValue === "neo");
+  },
+  { flush: "sync" }
+);
 
 // メイン効率の大スロット値が変更された時の処理
 watch(gearMainL, () => {

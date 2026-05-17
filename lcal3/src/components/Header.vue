@@ -1,21 +1,24 @@
 <template>
   <header class="header">
-    <img :src="titleImage" alt="Lcal3" class="title-image" />
+    <div
+      class="title-image-frame"
+      :class="{ 'is-dark': isDarkMode }"
+      role="img"
+      aria-label="Lcal3"
+    >
+      <img :src="titleImageLight" alt="" class="title-image title-image-light" />
+      <img :src="titleImageDark" alt="" class="title-image title-image-dark" />
+    </div>
     <a class="classic-link" href="/lcal/">スプラ2用はこちら</a>
   </header>
 </template>
 
 <script setup lang="ts">
-import { computed } from "vue";
 import { useDarkMode } from "../composables/useDarkMode";
 import titleImageLight from "../assets/title-light.png";
 import titleImageDark from "../assets/title-dark.png";
 
 const { isDarkMode } = useDarkMode();
-
-const titleImage = computed(() => {
-  return isDarkMode.value ? titleImageDark : titleImageLight;
-});
 </script>
 
 <style scoped>
@@ -27,9 +30,33 @@ const titleImage = computed(() => {
   margin-top: 0.5rem;
 }
 
+.title-image-frame {
+  display: grid;
+  max-width: 100%;
+}
+
 .title-image {
+  grid-area: 1 / 1;
   max-width: 100%;
   height: auto;
+  opacity: 0;
+}
+
+.title-image-light {
+  opacity: 1;
+  z-index: 1;
+}
+
+.title-image-dark {
+  z-index: 2;
+}
+
+.title-image-frame.is-dark .title-image-light {
+  opacity: 0;
+}
+
+.title-image-frame.is-dark .title-image-dark {
+  opacity: 1;
 }
 
 .classic-link {

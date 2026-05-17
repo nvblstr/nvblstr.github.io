@@ -1,25 +1,30 @@
-import { ref, watch } from "vue";
+import { ref } from "vue";
 
 // シングルトンとして状態を保持
 const isDarkMode = ref(
   document.documentElement.getAttribute("data-bs-theme") === "dark"
 );
 
+const applyDarkMode = (value: boolean) => {
+  document.documentElement.setAttribute(
+    "data-bs-theme",
+    value ? "dark" : "light"
+  );
+};
+
 export function useDarkMode() {
-  const toggle = () => {
-    isDarkMode.value = !isDarkMode.value;
+  const setDarkMode = (value: boolean) => {
+    isDarkMode.value = value;
+    applyDarkMode(value);
   };
 
-  // isDarkModeの変更を監視してDOMを更新
-  watch(isDarkMode, (newValue) => {
-    document.documentElement.setAttribute(
-      "data-bs-theme",
-      newValue ? "dark" : "light"
-    );
-  });
+  const toggle = () => {
+    setDarkMode(!isDarkMode.value);
+  };
 
   return {
     isDarkMode,
+    setDarkMode,
     toggle,
   };
 }
