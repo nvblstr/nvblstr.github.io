@@ -12,7 +12,7 @@
             :options="subNumberOptions"
             button-variant="outline-primary"
             size="lg"
-            name="radio-btn-outline"
+            name="sub-number-radio-btn-outline"
             buttons
           ></b-form-radio-group>
         </b-form-group>
@@ -30,7 +30,7 @@
             :options="uniqueGearOptions"
             button-variant="outline-primary"
             size="lg"
-            name="radio-btn-outline"
+            name="unique-gear-radio-btn-outline"
             buttons
           ></b-form-radio-group>
         </b-form-group>
