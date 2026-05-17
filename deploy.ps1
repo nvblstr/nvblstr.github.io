@@ -36,24 +36,9 @@ try {
 
   Copy-Item -Path (Join-Path $repoRoot "lcal/dist/*") -Destination (Join-Path $publishDir "lcal") -Recurse
   Copy-Item -Path (Join-Path $repoRoot "lcal3/dist/*") -Destination (Join-Path $publishDir "lcal3") -Recurse
+  Copy-Item -LiteralPath (Join-Path $repoRoot "lcal3/dist/index.html") -Destination (Join-Path $publishDir "index.html") -Force
 
   New-Item -ItemType File -Path (Join-Path $publishDir ".nojekyll") -Force | Out-Null
-
-  @"
-<!doctype html>
-<html lang="ja">
-  <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>LunaCalculator</title>
-    <meta http-equiv="refresh" content="0; url=./lcal3/">
-  </head>
-  <body>
-    <p><a href="./lcal/">LunaCalculator</a></p>
-    <p><a href="./lcal3/">LunaCalculator3</a></p>
-  </body>
-</html>
-"@ | Set-Content -Path (Join-Path $publishDir "index.html") -Encoding UTF8
 
   Write-Host "Built GitHub Pages content at $publishDir"
   if (-not $Publish) {

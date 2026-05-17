@@ -1,6 +1,7 @@
 <template>
   <header class="header">
     <img :src="titleImage" alt="Lcal3" class="title-image" />
+    <a class="classic-link" href="/lcal/">スプラ2用はこちら</a>
   </header>
 </template>
 
@@ -20,6 +21,7 @@ const titleImage = computed(() => {
 <style scoped>
 .header {
   display: flex;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
   margin-top: 0.5rem;
@@ -28,5 +30,19 @@ const titleImage = computed(() => {
 .title-image {
   max-width: 100%;
   height: auto;
+}
+
+.classic-link {
+  position: fixed;
+  top: 0.5rem;
+  right: 0.75rem;
+  z-index: 10;
+  color: var(--bs-secondary-color);
+  font-size: 0.75rem;
+  text-decoration: none;
+}
+
+.classic-link:hover {
+  text-decoration: underline;
 }
 </style>
