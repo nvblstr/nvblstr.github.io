@@ -295,6 +295,9 @@ a {
 :deep(.btn-radio label) {
   display: flex;
   flex: 1;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
 }
 :deep(.btn-radio span) {
   display: flex;
