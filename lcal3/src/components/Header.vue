@@ -28,6 +28,7 @@ const { isDarkMode } = useDarkMode();
   justify-content: center;
   align-items: center;
   margin-top: 0.5rem;
+  position: relative;
 }
 
 .title-image-frame {
@@ -71,5 +72,30 @@ const { isDarkMode } = useDarkMode();
 
 .classic-link:hover {
   text-decoration: underline;
+}
+
+@media (max-width: 576px) {
+  .header {
+    margin-top: 0;
+    padding: 0 0.45rem;
+  }
+
+  .title-image-frame {
+    margin-top: 0.95rem;
+  }
+
+  .title-image {
+    max-height: 36px;
+    object-fit: contain;
+  }
+
+  .classic-link {
+    position: fixed;
+    top: 0.2rem;
+    right: 0.45rem;
+    font-size: 0.62rem;
+    line-height: 1;
+    white-space: nowrap;
+  }
 }
 </style>

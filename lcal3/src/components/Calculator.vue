@@ -160,7 +160,7 @@
     </div>
 
     <!-- 結果表示セクション -->
-    <BRow class="mt-4">
+    <BRow class="mt-4 result-row">
       <BCol>
         <BCard
           :bg-variant="ink > 0 ? 'light' : 'warning'"
@@ -474,12 +474,132 @@ export default {
 
 /* レスポンシブ対応 */
 @media (max-width: 576px) {
+  .container-sm {
+    max-width: 100%;
+    padding-right: 0.45rem;
+    padding-left: 0.45rem;
+    overflow: hidden;
+  }
+
+  :deep(.row) {
+    --bs-gutter-x: 0.45rem;
+  }
+
   .display-4 {
     font-size: 2.5rem;
   }
 
   .fs-5 {
-    font-size: 1rem !important;
+    font-size: 0.9rem !important;
+  }
+
+  .input-section {
+    padding-top: 0.25rem !important;
+  }
+
+  .section-row {
+    margin-top: 0.34rem !important;
+    margin-bottom: 0.18rem !important;
+  }
+
+  .label {
+    min-height: 27px !important;
+    font-size: 13.5px !important;
+    padding: 0.18em 0.52em !important;
+    gap: 0.4rem !important;
+    line-height: 1.15 !important;
+  }
+
+  :deep(.btn-radio .btn) {
+    min-width: 0;
+    flex-basis: 0;
+    min-height: 28px;
+    --bs-btn-padding-y: 0.18rem;
+    --bs-btn-padding-x: 0.35rem;
+    --bs-btn-font-size: 0.88rem;
+    line-height: 1.15;
+  }
+
+  :deep(.gear-spin.btn-group-lg) {
+    height: 38px !important;
+  }
+
+  :deep(.gear-spin) {
+    min-height: 38px !important;
+    height: 38px !important;
+  }
+
+  :deep(.gear-spin .btn),
+  :deep(.gear-spin .form-control) {
+    min-height: 38px !important;
+    height: 38px !important;
+    padding-top: 0.1rem;
+    padding-bottom: 0.1rem;
+    font-size: 0.9rem;
+    line-height: 1.15;
+  }
+
+  :deep(.gear-spin .btn) {
+    flex: 0 0 30px;
+    padding-right: 0.25rem;
+    padding-left: 0.25rem;
+  }
+
+  :deep(.gear-spin .form-control) {
+    min-width: 0;
+  }
+
+  .slot-label {
+    font-size: 0.72rem !important;
+    line-height: 1.1 !important;
+  }
+
+  .result-row {
+    margin-top: 0.45rem !important;
+  }
+
+  .result-card {
+    height: 82px !important;
+  }
+
+  .result-card :deep(.card-body) {
+    padding: 0.42rem !important;
+  }
+
+  .result-content {
+    gap: 0.08rem;
+  }
+
+  :deep(.result-content .display-5) {
+    font-size: 1.55rem;
+    line-height: 1.05;
+  }
+
+  :deep(.result-content .gap-2) {
+    gap: 0.32rem !important;
+  }
+
+  :deep(.result-content .gap-1) {
+    gap: 0.05rem !important;
+  }
+
+  :deep(.result-content .mb-1) {
+    margin-bottom: 0 !important;
+  }
+
+  :deep(.result-content .px-3) {
+    padding-right: 0.6rem !important;
+    padding-left: 0.6rem !important;
+  }
+
+  :deep(.result-content .py-1) {
+    padding-top: 0.04rem !important;
+    padding-bottom: 0.04rem !important;
+  }
+
+  :deep(.result-content .small) {
+    font-size: 0.68rem;
+    line-height: 1.1;
   }
 }
 
@@ -618,9 +738,12 @@ export default {
 :deep(.btn-radio label) {
   display: flex;
   flex: 1;
+  min-width: 0;
   justify-content: center;
   align-items: center;
   text-align: center;
+  overflow: hidden;
+  text-overflow: ellipsis;
   border-color: #e2e8f0 !important;
   color: #4a5568 !important;
 }

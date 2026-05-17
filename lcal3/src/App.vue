@@ -20,6 +20,13 @@ body {
   margin-bottom: 2rem;
 }
 
+@media (max-width: 576px) {
+  body {
+    margin-top: 0.25rem;
+    margin-bottom: 0.5rem;
+  }
+}
+
 [data-bs-theme="dark"] {
   color: #e2e8f0;
 }
