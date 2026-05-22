@@ -169,14 +169,20 @@
         >
           <!-- インクが十分な場合の表示 -->
           <div v-if="ink > 0" class="result-content">
-            <div class="d-flex align-items-baseline justify-content-center gap-2">
+            <div
+              class="d-flex align-items-baseline justify-content-center gap-2"
+            >
               <strong class="display-5 text-dark">{{ fireNumber }}</strong>
               <span class="fs-5 text-secondary">{{ fireNumberMessage }}</span>
             </div>
             <div class="d-flex flex-column align-items-center gap-1">
-              <div class="text-secondary small opacity-75 mb-1">ギアパワーによる増加</div>
+              <div class="text-secondary small opacity-75 mb-1">
+                ギアパワーによる増加
+              </div>
               <div class="bg-primary bg-opacity-10 rounded-pill px-3 py-1">
-                <span class="fs-5 text-primary fw-semibold">+{{ fireNumberIncrement }}</span>
+                <span class="fs-5 text-primary fw-semibold"
+                  >+{{ fireNumberIncrement }}</span
+                >
                 <span class="text-secondary small ms-1">発</span>
               </div>
             </div>
@@ -196,7 +202,7 @@
         <section class="recommendation-panel">
           <div class="recommendation-header">
             <div>
-              <h2>改善候補</h2>
+              <h2>ギア配分の改善候補</h2>
               <p>{{ recommendationSummary }}</p>
             </div>
             <span class="current-slots">現在 {{ currentGearPowerCost }}GP</span>
@@ -229,14 +235,22 @@
                 </template>
               </span>
               <span class="candidate-gear">
-                メイン 大{{ candidate.gearMainL }} 小{{ candidate.gearMainS }}
+                <span class="candidate-gear-label">メイン</span>
+                <span class="candidate-gear-values">
+                  大{{ candidate.gearMainL }} 小{{ candidate.gearMainS }}
+                </span>
               </span>
               <span class="candidate-gear">
-                サブ 大{{ candidate.gearSubL }} 小{{ candidate.gearSubS }}
+                <span class="candidate-gear-label">サブ</span>
+                <span class="candidate-gear-values">
+                  大{{ candidate.gearSubL }} 小{{ candidate.gearSubS }}
+                </span>
               </span>
               <span class="candidate-slots">
                 {{ candidate.gearPowerCost }}GP
-                <template v-if="currentGearPowerCost !== candidate.gearPowerCost">
+                <template
+                  v-if="currentGearPowerCost !== candidate.gearPowerCost"
+                >
                   / -{{ currentGearPowerCost - candidate.gearPowerCost }}
                 </template>
               </span>
@@ -379,9 +393,11 @@ const calcGearLLimit = (gear: UniqueGear): number => {
 
 const getOptionText = <T extends string | number>(
   options: { text: string; value: T }[],
-  value: T
+  value: T,
 ): string => {
-  return options.find((option) => option.value === value)?.text ?? String(value);
+  return (
+    options.find((option) => option.value === value)?.text ?? String(value)
+  );
 };
 
 const calcMainCost = (gearPower57: number): number => {
@@ -397,7 +413,7 @@ const calcMainCost = (gearPower57: number): number => {
 const calcSubCost = (
   weapon: WeaponType,
   subCostBase: number,
-  gearPower57: number
+  gearPower57: number,
 ): number => {
   const effectRate = weapon === "normal" ? 0.35 : 0.3;
   return (
@@ -444,7 +460,7 @@ const subCost = computed((): number => {
 const calcFireNumber = (
   mainCost: number,
   subCost: number,
-  subNumber: number
+  subNumber: number,
 ): number => {
   return Math.floor((1 - subCost * subNumber) / mainCost);
 };
@@ -494,7 +510,7 @@ const generateGearCandidates = (
   targetFireNumber: number,
   currentCost: number,
   fixedSubL: number,
-  fixedSubS: number
+  fixedSubS: number,
 ): GearCandidate[] => {
   const candidates: GearCandidate[] = [];
   const largeLimit = calcGearLLimit(unique);
@@ -525,7 +541,7 @@ const generateGearCandidates = (
           const candidateFireNumber = calcFireNumber(
             candidateMainCost,
             candidateSubCost,
-            subCount
+            subCount,
           );
 
           if (
@@ -557,21 +573,23 @@ const generateGearCandidates = (
     }
   }
 
-  return candidates.sort((a, b) => {
-    if (a.fireNumber !== b.fireNumber) {
-      return b.fireNumber - a.fireNumber;
-    }
-    if (a.gearPowerCost !== b.gearPowerCost) {
-      return a.gearPowerCost - b.gearPowerCost;
-    }
-    if (a.largeSlots !== b.largeSlots) {
-      return a.largeSlots - b.largeSlots;
-    }
-    if (a.gearPowerTotal !== b.gearPowerTotal) {
-      return a.gearPowerTotal - b.gearPowerTotal;
-    }
-    return b.ink - a.ink;
-  }).map((candidate, index) => ({ ...candidate, rank: index + 1 }));
+  return candidates
+    .sort((a, b) => {
+      if (a.fireNumber !== b.fireNumber) {
+        return b.fireNumber - a.fireNumber;
+      }
+      if (a.gearPowerCost !== b.gearPowerCost) {
+        return a.gearPowerCost - b.gearPowerCost;
+      }
+      if (a.largeSlots !== b.largeSlots) {
+        return a.largeSlots - b.largeSlots;
+      }
+      if (a.gearPowerTotal !== b.gearPowerTotal) {
+        return a.gearPowerTotal - b.gearPowerTotal;
+      }
+      return b.ink - a.ink;
+    })
+    .map((candidate, index) => ({ ...candidate, rank: index + 1 }));
 };
 
 const recommendedGears = computed((): GearCandidate[] => {
@@ -586,7 +604,7 @@ const recommendedGears = computed((): GearCandidate[] => {
     fireNumber.value,
     currentGearPowerCost.value,
     Number(gearSubL.value),
-    Number(gearSubS.value)
+    Number(gearSubS.value),
   ).slice(0, RECOMMENDATION_LIMIT);
 });
 
@@ -642,7 +660,7 @@ watch(
   (newValue) => {
     setDarkMode(newValue === "neo");
   },
-  { flush: "sync" }
+  { flush: "sync" },
 );
 
 // メイン効率の大スロット値が変更された時の処理
@@ -1329,6 +1347,7 @@ export default {
 
 .recommendation-list {
   display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(310px, 1fr));
   gap: 0.45rem;
 }
 
@@ -1403,7 +1422,28 @@ export default {
   line-height: 1.2;
   min-width: 0;
   text-align: center;
-  overflow-wrap: anywhere;
+}
+
+.candidate-gear {
+  display: inline-flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  column-gap: 0.25em;
+  row-gap: 0;
+}
+
+.candidate-gear-label,
+.candidate-gear-values {
+  display: inline-block;
+}
+
+.candidate-gear-label {
+  flex: 0 0 3em;
+}
+
+.candidate-gear-values {
+  flex: 0 0 auto;
+  white-space: nowrap;
 }
 
 .candidate-slots {
@@ -1476,6 +1516,7 @@ export default {
   }
 
   .recommendation-list {
+    grid-template-columns: 1fr;
     gap: 0.32rem;
   }
 
