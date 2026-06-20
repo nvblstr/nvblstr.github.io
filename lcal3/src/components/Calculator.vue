@@ -22,6 +22,7 @@
               size="lg"
               name="weapon-type-radio"
               buttons
+              aria-label="ブキの種類を選択"
             />
           </BFormGroup>
         </BCol>
@@ -46,6 +47,7 @@
               size="lg"
               name="sub-number-radio"
               buttons
+              aria-label="サブウェポンの使用回数を選択"
             />
           </BFormGroup>
         </BCol>
@@ -70,6 +72,7 @@
               size="lg"
               name="unique-gear-radio"
               buttons
+              aria-label="特殊ギアを選択"
             ></BFormRadioGroup>
           </BFormGroup>
         </BCol>
@@ -98,6 +101,7 @@
             :max="gearLLimit"
             size="lg"
             inline
+            aria-label="メイン効率の大スロット数"
           ></BFormSpinbutton>
         </BCol>
         <BCol>
@@ -109,6 +113,7 @@
             max="9"
             size="lg"
             inline
+            aria-label="メイン効率の小スロット数"
           ></BFormSpinbutton>
         </BCol>
       </BRow>
@@ -133,6 +138,7 @@
             :max="gearLLimit"
             size="lg"
             inline
+            aria-label="サブ効率の大スロット数"
           ></BFormSpinbutton>
         </BCol>
         <BCol>
@@ -144,6 +150,7 @@
             max="9"
             size="lg"
             inline
+            aria-label="サブ効率の小スロット数"
           ></BFormSpinbutton>
         </BCol>
       </BRow>
@@ -266,332 +273,107 @@
   </BContainer>
 </template>
 
-<script lang="ts">
+<script setup lang="ts">
 import { ref, computed, watch } from "vue";
 import "bootstrap-icons/font/bootstrap-icons.css";
 import { useDarkMode } from "../composables/useDarkMode";
+import {
+  type SubNumber,
+  type UniqueGear,
+  type WeaponType,
+  type GearCandidate,
+  type RecommendationCondition,
+  FIRE_NUMBER_MESSAGE,
+  NOT_ENOUGH_MESSAGE_1,
+  NOT_ENOUGH_MESSAGE_2,
+  MAIN_COST_BASE,
+  RECOMMENDATION_LIMIT,
+  WEAPON_TYPE_OPTIONS,
+  SUB_NUMBER_OPTIONS,
+  UNIQUE_GEAR_OPTIONS,
+} from "../types/calculator";
+import {
+  calcSubCostBase,
+  calcGearPowerIncrementByType,
+  calcGearLLimit,
+  calcMainCost,
+  calcSubCost,
+  calcFireNumber,
+  getOptionText,
+  generateGearCandidates,
+} from "../lib/calculator";
 
-// ===== 型定義 =====
-// サブ回数の型（0, 1, 2回）
-type SubNumber = 0 | 1 | 2;
-// 特殊ギアの型（なし、カムバック、ラストスパート）
-type UniqueGear = "none" | "comeback" | "lastspurt";
-// ブキの型（無印、ネオ）
-type WeaponType = "normal" | "neo";
-
-// サブ回数のオプション型
-interface SubNumberOption {
-  text: string;
-  value: SubNumber;
-  [key: string]: unknown;
-}
-
-// 特殊ギアのオプション型
-interface UniqueGearOption {
-  text: string;
-  value: UniqueGear;
-  [key: string]: unknown;
-}
-
-// ブキのオプション型
-interface WeaponTypeOption {
-  text: string;
-  value: WeaponType;
-  [key: string]: unknown;
-}
-
-interface GearCandidate {
-  id: string;
-  rank: number;
-  gearMainL: number;
-  gearMainS: number;
-  gearSubL: number;
-  gearSubS: number;
-  fireNumber: number;
-  ink: number;
-  largeSlots: number;
-  smallSlots: number;
-  totalSlots: number;
-  gearPowerCost: number;
-  gearPowerTotal: number;
-}
-
-interface RecommendationCondition {
-  label: string;
-  value: string;
-}
-
-// ===== 定数 =====
-// 表示メッセージ
-const FIRE_NUMBER_MESSAGE = "発撃てます";
-const NOT_ENOUGH_MESSAGE_1 = "今のギアパワーではサブウェポンは";
-const NOT_ENOUGH_MESSAGE_2 = "回使えません";
-
-// 基本コスト
-const MAIN_COST_BASE = 0.075; // メインブキの基本コスト
-const RECOMMENDATION_LIMIT = 5;
-
-// ===== リアクティブな状態 =====
-// ブキの選択値
+// ===== リアクティブな状態（コンポーネントスコープ） =====
 const weaponType = ref<WeaponType>("normal");
-// サブ回数の選択値
 const subNumber = ref<SubNumber>(0);
-// 特殊ギアの選択値
 const uniqueGear = ref<UniqueGear>("none");
-// メイン効率の大スロット値
 const gearMainL = ref<number>(0);
-// メイン効率の小スロット値
 const gearMainS = ref<number>(0);
-// サブ効率の大スロット値
 const gearSubL = ref<number>(0);
-// サブ効率の小スロット値
 const gearSubS = ref<number>(0);
 
 // ===== オプション設定 =====
-// ブキの選択肢
-const weaponTypeOptions: WeaponTypeOption[] = [
-  { text: "無印", value: "normal" },
-  { text: "ネオ", value: "neo" },
-];
+const weaponTypeOptions = WEAPON_TYPE_OPTIONS;
+const subNumberOptions = SUB_NUMBER_OPTIONS;
+const uniqueGearOptions = UNIQUE_GEAR_OPTIONS;
 
-// サブ回数の選択肢
-const subNumberOptions: SubNumberOption[] = [
-  { text: "0", value: 0 },
-  { text: "1", value: 1 },
-  { text: "2", value: 2 },
-];
+// ===== Computed: 基本値 =====
+const subCostBase = computed((): number => calcSubCostBase(weaponType.value));
 
-// 特殊ギアの選択肢
-const uniqueGearOptions: UniqueGearOption[] = [
-  { text: "なし", value: "none" },
-  { text: "カムバ", value: "comeback" },
-  { text: "ラスパ", value: "lastspurt" },
-];
+const calcGearPowerIncrement = computed((): number =>
+  calcGearPowerIncrementByType(uniqueGear.value),
+);
 
-// ===== 計算ロジック =====
+const gearLLimit = computed((): number => calcGearLLimit(uniqueGear.value));
 
-const calcSubCostBase = (weapon: WeaponType): number => {
-  return weapon === "normal" ? 0.7 : 0.6;
-};
+// ===== Computed: ギアパワー57表記 =====
+const gearMain57 = computed(
+  (): number =>
+    10 * gearMainL.value + 3 * gearMainS.value + calcGearPowerIncrement.value,
+);
 
-const calcGearPowerIncrementByType = (gear: UniqueGear): number => {
-  switch (gear) {
-    case "none":
-      return 0;
-    case "comeback":
-      return 10;
-    case "lastspurt":
-      return 18; /* ver.5.0.0から24→18に変更 */
-    default:
-      return 0;
-  }
-};
+const gearSub57 = computed(
+  (): number =>
+    10 * gearSubL.value + 3 * gearSubS.value + calcGearPowerIncrement.value,
+);
 
-const calcGearLLimit = (gear: UniqueGear): number => {
-  return gear === "none" ? 3 : 2;
-};
+// ===== Computed: インク消費量 =====
+const mainCost = computed((): number => calcMainCost(gearMain57.value));
 
-const getOptionText = <T extends string | number>(
-  options: { text: string; value: T }[],
-  value: T,
-): string => {
-  return (
-    options.find((option) => option.value === value)?.text ?? String(value)
-  );
-};
+const subCost = computed((): number =>
+  calcSubCost(weaponType.value, subCostBase.value, gearSub57.value),
+);
 
-const calcMainCost = (gearPower57: number): number => {
-  return (
-    (1 -
-      0.5 *
-        (0.033 * gearPower57 - 0.00027 * gearPower57 ** 2) **
-          (Math.log(0.6) / Math.log(0.5))) *
-    MAIN_COST_BASE
-  );
-};
+// ===== Computed: 発射回数・インク =====
+const fireNumber = computed((): number =>
+  calcFireNumber(mainCost.value, subCost.value, subNumber.value),
+);
 
-const calcSubCost = (
-  weapon: WeaponType,
-  subCostBase: number,
-  gearPower57: number,
-): number => {
-  const effectRate = weapon === "normal" ? 0.35 : 0.3;
-  return (
-    (1 - effectRate * (0.033 * gearPower57 - 0.00027 * gearPower57 ** 2)) *
-    subCostBase
-  );
-};
-
-// サブブキの基本コスト
-const subCostBase = computed((): number => {
-  return calcSubCostBase(weaponType.value);
-});
-
-// 特殊ギアによるギアパワー増加量の計算
-const calcGearPowerIncrement = computed((): number => {
-  return calcGearPowerIncrementByType(uniqueGear.value);
-});
-
-// メイン効率の57表記の計算
-const gearMain57 = computed((): number => {
-  return (
-    10 * gearMainL.value + 3 * gearMainS.value + calcGearPowerIncrement.value
-  );
-});
-
-// サブ効率の57表記の計算
-const gearSub57 = computed((): number => {
-  return (
-    10 * gearSubL.value + 3 * gearSubS.value + calcGearPowerIncrement.value
-  );
-});
-
-// メイン武器のインク消費量の計算
-const mainCost = computed((): number => {
-  return calcMainCost(gearMain57.value);
-});
-
-// サブ武器のインク消費量の計算
-const subCost = computed((): number => {
-  return calcSubCost(weaponType.value, subCostBase.value, gearSub57.value);
-});
-
-// 発射可能回数の計算
-const calcFireNumber = (
-  mainCost: number,
-  subCost: number,
-  subNumber: number,
-): number => {
-  return Math.floor((1 - subCost * subNumber) / mainCost);
-};
-
-// 発射可能回数の表示値
-const fireNumber = computed((): number => {
-  return calcFireNumber(mainCost.value, subCost.value, subNumber.value);
-});
-
-// ギアパワーによる発射回数増加量の計算
 const fireNumberIncrement = computed((): number => {
-  if (calcFireNumber(MAIN_COST_BASE, subCostBase.value, subNumber.value) >= 0) {
-    return (
-      fireNumber.value -
-      calcFireNumber(MAIN_COST_BASE, subCostBase.value, subNumber.value)
-    );
-  }
-  return fireNumber.value;
+  const baseFireNumber = calcFireNumber(
+    MAIN_COST_BASE,
+    subCostBase.value,
+    subNumber.value,
+  );
+  return fireNumber.value - baseFireNumber;
 });
 
-// 残りインク量の計算
-const ink = computed((): number => {
-  return 1 - subCost.value * subNumber.value;
-});
+const ink = computed((): number => 1 - subCost.value * subNumber.value);
 
-// 大スロットの上限値の計算
-const gearLLimit = computed((): number => {
-  return calcGearLLimit(uniqueGear.value);
-});
+// ===== Computed: スロット・GP =====
+const currentLargeSlots = computed(
+  (): number => gearMainL.value + gearSubL.value,
+);
 
-const currentLargeSlots = computed((): number => {
-  return Number(gearMainL.value) + Number(gearSubL.value);
-});
+const currentSmallSlots = computed(
+  (): number => gearMainS.value + gearSubS.value,
+);
 
-const currentSmallSlots = computed((): number => {
-  return Number(gearMainS.value) + Number(gearSubS.value);
-});
+const currentGearPowerCost = computed(
+  (): number => currentLargeSlots.value * 10 + currentSmallSlots.value * 3,
+);
 
-const currentGearPowerCost = computed((): number => {
-  return currentLargeSlots.value * 10 + currentSmallSlots.value * 3;
-});
-
-const generateGearCandidates = (
-  weapon: WeaponType,
-  unique: UniqueGear,
-  subCount: SubNumber,
-  targetFireNumber: number,
-  currentCost: number,
-  fixedSubL: number,
-  fixedSubS: number,
-): GearCandidate[] => {
-  const candidates: GearCandidate[] = [];
-  const largeLimit = calcGearLLimit(unique);
-  const increment = calcGearPowerIncrementByType(unique);
-  const baseSubCost = calcSubCostBase(weapon);
-
-  const maxMainL = subCount === 0 ? largeLimit - fixedSubL : largeLimit;
-  for (let mainL = 0; mainL <= maxMainL; mainL += 1) {
-    const subLStart = subCount === 0 ? fixedSubL : 0;
-    const subLLimit = subCount === 0 ? fixedSubL : largeLimit - mainL;
-    for (let subL = subLStart; subL <= subLLimit; subL += 1) {
-      const maxMainS = subCount === 0 ? 9 - fixedSubS : 9;
-      for (let mainS = 0; mainS <= maxMainS; mainS += 1) {
-        const subSStart = subCount === 0 ? fixedSubS : 0;
-        const subSLimit = subCount === 0 ? fixedSubS : 9 - mainS;
-        for (let subS = subSStart; subS <= subSLimit; subS += 1) {
-          const totalSlots = mainL + subL + mainS + subS;
-          const gearPowerCost = (mainL + subL) * 10 + (mainS + subS) * 3;
-          if (gearPowerCost > currentCost) {
-            continue;
-          }
-
-          const mainGear57 = 10 * mainL + 3 * mainS + increment;
-          const subGear57 = 10 * subL + 3 * subS + increment;
-          const candidateMainCost = calcMainCost(mainGear57);
-          const candidateSubCost = calcSubCost(weapon, baseSubCost, subGear57);
-          const candidateInk = 1 - candidateSubCost * subCount;
-          const candidateFireNumber = calcFireNumber(
-            candidateMainCost,
-            candidateSubCost,
-            subCount,
-          );
-
-          if (
-            candidateInk <= 0 ||
-            candidateFireNumber < targetFireNumber ||
-            (candidateFireNumber === targetFireNumber &&
-              gearPowerCost === currentCost)
-          ) {
-            continue;
-          }
-
-          candidates.push({
-            id: `${mainL}-${mainS}-${subL}-${subS}-${candidateFireNumber}`,
-            rank: 0,
-            gearMainL: mainL,
-            gearMainS: mainS,
-            gearSubL: subL,
-            gearSubS: subS,
-            fireNumber: candidateFireNumber,
-            ink: candidateInk,
-            largeSlots: mainL + subL,
-            smallSlots: mainS + subS,
-            totalSlots,
-            gearPowerCost,
-            gearPowerTotal: mainGear57 + subGear57,
-          });
-        }
-      }
-    }
-  }
-
-  return candidates
-    .sort((a, b) => {
-      if (a.fireNumber !== b.fireNumber) {
-        return b.fireNumber - a.fireNumber;
-      }
-      if (a.gearPowerCost !== b.gearPowerCost) {
-        return a.gearPowerCost - b.gearPowerCost;
-      }
-      if (a.largeSlots !== b.largeSlots) {
-        return a.largeSlots - b.largeSlots;
-      }
-      if (a.gearPowerTotal !== b.gearPowerTotal) {
-        return a.gearPowerTotal - b.gearPowerTotal;
-      }
-      return b.ink - a.ink;
-    })
-    .map((candidate, index) => ({ ...candidate, rank: index + 1 }));
-};
-
+// ===== Computed: 推奨ギア =====
 const recommendedGears = computed((): GearCandidate[] => {
   if (currentGearPowerCost.value === 0 || ink.value <= 0) {
     return [];
@@ -603,8 +385,8 @@ const recommendedGears = computed((): GearCandidate[] => {
     subNumber.value,
     fireNumber.value,
     currentGearPowerCost.value,
-    Number(gearSubL.value),
-    Number(gearSubS.value),
+    gearSubL.value,
+    gearSubS.value,
   ).slice(0, RECOMMENDATION_LIMIT);
 });
 
@@ -615,30 +397,29 @@ const recommendationSummary = computed((): string => {
   return `${fireNumber.value}発以上 / ${currentGearPowerCost.value}GP以下で比較`;
 });
 
-const recommendationConditions = computed((): RecommendationCondition[] => {
-  return [
-    {
-      label: "ブキ",
-      value: getOptionText(weaponTypeOptions, weaponType.value),
-    },
-    {
-      label: "サブ回数",
-      value: `${subNumber.value}回`,
-    },
-    {
-      label: "特殊ギア",
-      value: getOptionText(uniqueGearOptions, uniqueGear.value),
-    },
-    {
-      label: "探索対象",
-      value:
-        subNumber.value === 0
-          ? "メインのみ（サブ固定）"
-          : "メイン効率 + サブ効率",
-    },
-  ];
-});
+const recommendationConditions = computed((): RecommendationCondition[] => [
+  {
+    label: "ブキ",
+    value: getOptionText(weaponTypeOptions, weaponType.value),
+  },
+  {
+    label: "サブ回数",
+    value: `${subNumber.value}回`,
+  },
+  {
+    label: "特殊ギア",
+    value: getOptionText(uniqueGearOptions, uniqueGear.value),
+  },
+  {
+    label: "探索対象",
+    value:
+      subNumber.value === 0
+        ? "メインのみ（サブ固定）"
+        : "メイン効率 + サブ効率",
+  },
+]);
 
+// ===== Actions =====
 const applyRecommendedGear = (candidate: GearCandidate): void => {
   gearMainL.value = candidate.gearMainL;
   gearMainS.value = candidate.gearMainS;
@@ -647,12 +428,11 @@ const applyRecommendedGear = (candidate: GearCandidate): void => {
 };
 
 // ===== 表示メッセージ =====
-const fireNumberMessage = computed((): string => FIRE_NUMBER_MESSAGE);
-const notEnoughMessage1 = computed((): string => NOT_ENOUGH_MESSAGE_1);
-const notEnoughMessage2 = computed((): string => NOT_ENOUGH_MESSAGE_2);
+const fireNumberMessage = FIRE_NUMBER_MESSAGE;
+const notEnoughMessage1 = NOT_ENOUGH_MESSAGE_1;
+const notEnoughMessage2 = NOT_ENOUGH_MESSAGE_2;
 
-// ===== ウォッチャー =====
-// ブキタイプが変更された時の処理
+// ===== Watch: ダークモード切替 =====
 const { setDarkMode } = useDarkMode();
 
 watch(
@@ -663,74 +443,50 @@ watch(
   { flush: "sync" },
 );
 
-// メイン効率の大スロット値が変更された時の処理
-watch(gearMainL, () => {
-  if (Number(gearMainL.value) + Number(gearSubL.value) > gearLLimit.value) {
-    gearSubL.value = gearSubL.value - 1;
+// ===== Watch: スロット値の連動調整 =====
+// 小スロット: gearMainS + gearSubS <= 9
+// 一方が増加して上限超過時、もう一方を減らす
+watch(gearMainS, (newVal, oldVal) => {
+  if (oldVal == null) return;
+  if (newVal > oldVal && newVal + gearSubS.value > 9) {
+    gearSubS.value = Math.max(0, 9 - newVal);
   }
-});
+}, { flush: 'sync' });
 
-// サブ効率の大スロット値が変更された時の処理
-watch(gearSubL, () => {
-  if (Number(gearMainL.value) + Number(gearSubL.value) > gearLLimit.value) {
-    gearMainL.value = gearMainL.value - 1;
+watch(gearSubS, (newVal, oldVal) => {
+  if (oldVal == null) return;
+  if (newVal > oldVal && gearMainS.value + newVal > 9) {
+    gearMainS.value = Math.max(0, 9 - newVal);
   }
-});
+}, { flush: 'sync' });
 
-// メイン効率の小スロット値が変更された時の処理
-watch(gearMainS, () => {
-  if (Number(gearMainS.value) + Number(gearSubS.value) > 9) {
-    gearSubS.value = gearSubS.value - 1;
+// 大スロット: gearMainL + gearSubL <= gearLLimit
+watch(gearMainL, (newVal, oldVal) => {
+  if (oldVal == null) return;
+  if (newVal > oldVal && newVal + gearSubL.value > gearLLimit.value) {
+    gearSubL.value = Math.max(0, gearLLimit.value - newVal);
   }
-});
+}, { flush: 'sync' });
 
-// サブ効率の小スロット値が変更された時の処理
-watch(gearSubS, () => {
-  if (Number(gearMainS.value) + Number(gearSubS.value) > 9) {
-    gearMainS.value = gearMainS.value - 1;
+watch(gearSubL, (newVal, oldVal) => {
+  if (oldVal == null) return;
+  if (newVal > oldVal && gearMainL.value + newVal > gearLLimit.value) {
+    gearMainL.value = Math.max(0, gearLLimit.value - newVal);
   }
-});
+}, { flush: 'sync' });
 
-// 大スロットの上限値が変更された時の処理
-watch(gearLLimit, () => {
-  if (Number(gearMainL.value) + Number(gearSubL.value) > gearLLimit.value) {
-    if (Number(gearMainL.value) > Number(gearSubL.value)) {
-      gearMainL.value = gearMainL.value - 1;
+// 特殊ギア変更時にスロット値が上限を超えないよう調整
+watch(gearLLimit, (newLimit, oldLimit) => {
+  if (oldLimit == null) return;
+  const total = gearMainL.value + gearSubL.value;
+  if (total > newLimit) {
+    if (gearMainL.value >= gearSubL.value) {
+      gearMainL.value = Math.max(0, newLimit - gearSubL.value);
     } else {
-      gearSubL.value = gearSubL.value - 1;
+      gearSubL.value = Math.max(0, newLimit - gearMainL.value);
     }
   }
-});
-
-export default {
-  name: "Calculator",
-  setup() {
-    return {
-      weaponType,
-      weaponTypeOptions,
-      subNumber,
-      uniqueGear,
-      gearMainL,
-      gearMainS,
-      gearSubL,
-      gearSubS,
-      subNumberOptions,
-      uniqueGearOptions,
-      fireNumber,
-      fireNumberMessage,
-      fireNumberIncrement,
-      recommendedGears,
-      recommendationSummary,
-      recommendationConditions,
-      currentGearPowerCost,
-      applyRecommendedGear,
-      notEnoughMessage1,
-      notEnoughMessage2,
-      gearLLimit,
-      ink,
-    };
-  },
-};
+}, { flush: 'sync' });
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
@@ -921,63 +677,33 @@ export default {
 
 /* 各セクションのラベルスタイル */
 .label-number {
-  background: linear-gradient(to bottom, #f0fdf4, #dcfce7);
-  color: #166534;
-  box-shadow: 0 2px 4px rgba(22, 101, 52, 0.15);
-}
-
-[data-bs-theme="dark"] .label-number {
-  background: linear-gradient(to bottom, #064e3b, #065f46);
-  color: #d1fae5;
-  box-shadow: 0 2px 4px rgba(6, 95, 70, 0.3);
+  background: linear-gradient(to bottom, var(--label-number-bg-from), var(--label-number-bg-to));
+  color: var(--label-number-text);
+  box-shadow: 0 2px 4px var(--label-number-shadow);
 }
 
 .label-weapon {
-  background: linear-gradient(to bottom, #fef2f2, #fee2e2);
-  color: #991b1b;
-  box-shadow: 0 2px 4px rgba(220, 38, 38, 0.15);
-}
-
-[data-bs-theme="dark"] .label-weapon {
-  background: linear-gradient(to bottom, #7f1d1d, #991b1b);
-  color: #fecaca;
-  box-shadow: 0 2px 4px rgba(153, 27, 27, 0.3);
+  background: linear-gradient(to bottom, var(--label-weapon-bg-from), var(--label-weapon-bg-to));
+  color: var(--label-weapon-text);
+  box-shadow: 0 2px 4px var(--label-weapon-shadow);
 }
 
 .label-unique {
-  background: linear-gradient(to bottom, #f7f0ff, #eee3ff);
-  color: #4c3c8a;
-  box-shadow: 0 2px 4px rgba(128, 90, 213, 0.15);
-}
-
-[data-bs-theme="dark"] .label-unique {
-  background: linear-gradient(to bottom, #312e81, #4338ca);
-  color: #e0e7ff;
-  box-shadow: 0 2px 4px rgba(67, 56, 202, 0.3);
+  background: linear-gradient(to bottom, var(--label-unique-bg-from), var(--label-unique-bg-to));
+  color: var(--label-unique-text);
+  box-shadow: 0 2px 4px var(--label-unique-shadow);
 }
 
 .label-main {
-  background: linear-gradient(to bottom, #fff0f5, #fde2e9);
-  color: #a32b7a;
-  box-shadow: 0 2px 4px rgba(237, 100, 166, 0.15);
-}
-
-[data-bs-theme="dark"] .label-main {
-  background: linear-gradient(to bottom, #831843, #be185d);
-  color: #fdebf6;
-  box-shadow: 0 2px 4px rgba(190, 24, 93, 0.3);
+  background: linear-gradient(to bottom, var(--label-main-bg-from), var(--label-main-bg-to));
+  color: var(--label-main-text);
+  box-shadow: 0 2px 4px var(--label-main-shadow);
 }
 
 .label-sub {
-  background: linear-gradient(to bottom, #e6f4ff, #b4d9f8);
-  color: #2c5a9e;
-  box-shadow: 0 2px 4px rgba(66, 153, 225, 0.15);
-}
-
-[data-bs-theme="dark"] .label-sub {
-  background: linear-gradient(to bottom, #1e3a8a, #2563eb);
-  color: #eef5fd;
-  box-shadow: 0 2px 4px rgba(37, 99, 235, 0.3);
+  background: linear-gradient(to bottom, var(--label-sub-bg-from), var(--label-sub-bg-to));
+  color: var(--label-sub-text);
+  box-shadow: 0 2px 4px var(--label-sub-shadow);
 }
 
 /* ラベルのホバーエフェクト */
@@ -1020,35 +746,19 @@ export default {
   text-align: center;
   overflow: hidden;
   text-overflow: ellipsis;
-  border-color: #e2e8f0 !important;
-  color: #4a5568 !important;
-}
-
-[data-bs-theme="dark"] :deep(.btn-radio label) {
-  border-color: #4a5568 !important;
-  color: #e2e8f0 !important;
+  border-color: var(--color-border) !important;
+  color: var(--color-text-secondary) !important;
 }
 
 :deep(.btn-radio label:hover) {
-  background-color: #f1f5f9 !important;
-  border-color: #cbd5e0 !important;
-}
-
-[data-bs-theme="dark"] :deep(.btn-radio label:hover) {
-  background-color: #2d3748 !important;
-  border-color: #4a5568 !important;
+  background-color: var(--color-bg-tertiary) !important;
+  border-color: var(--color-border-hover) !important;
 }
 
 :deep(.btn-radio input[type="radio"]:checked + label) {
-  background-color: #e2e8f0 !important;
-  border-color: #cbd5e0 !important;
-  color: #2d3748 !important;
-}
-
-[data-bs-theme="dark"] :deep(.btn-radio input[type="radio"]:checked + label) {
-  background-color: #4a5568 !important;
-  border-color: #2d3748 !important;
-  color: #e2e8f0 !important;
+  background-color: var(--color-border) !important;
+  border-color: var(--color-border-hover) !important;
+  color: var(--color-text-primary) !important;
 }
 
 /* スピンボタンのレイアウト */
@@ -1064,60 +774,34 @@ export default {
   text-align: center;
   padding: 0;
   width: 100%;
-  border-color: #e2e8f0;
-  color: #4a5568;
-}
-
-[data-bs-theme="dark"] :deep(.gear-spin .form-control) {
-  border-color: #4a5568;
-  color: #e2e8f0;
-  background-color: #2d3748;
+  border-color: var(--color-border);
+  color: var(--color-text-secondary);
+  background-color: var(--color-bg-primary);
 }
 
 :deep(.gear-spin .form-control:focus) {
   box-shadow: none;
-  border-color: #cbd5e0;
-  background-color: #f1f5f9;
-}
-
-[data-bs-theme="dark"] :deep(.gear-spin .form-control:focus) {
-  border-color: #4a5568;
-  background-color: #2d3748;
+  border-color: var(--color-border-hover);
+  background-color: var(--color-bg-tertiary);
 }
 
 :deep(.gear-spin .btn) {
-  color: #4a5568;
-  border-color: #e2e8f0;
-  background-color: #f1f5f9;
-}
-
-[data-bs-theme="dark"] :deep(.gear-spin .btn) {
-  color: #e2e8f0;
-  border-color: #4a5568;
-  background-color: #2d3748;
+  color: var(--color-text-secondary);
+  border-color: var(--color-border);
+  background-color: var(--color-bg-tertiary);
 }
 
 :deep(.gear-spin .btn:hover) {
-  background-color: #e2e8f0;
-  border-color: #cbd5e0;
-  color: #2d3748;
-}
-
-[data-bs-theme="dark"] :deep(.gear-spin .btn:hover) {
-  background-color: #4a5568;
-  border-color: #2d3748;
-  color: #e2e8f0;
+  background-color: var(--color-border);
+  border-color: var(--color-border-hover);
+  color: var(--color-text-primary);
 }
 
 /* スロットサイズのラベル */
 .slot-label {
-  color: #6c757d;
+  color: var(--color-text-subtle);
   text-align: center;
   display: block;
-}
-
-[data-bs-theme="dark"] .slot-label {
-  color: #a0aec0;
 }
 
 /* アイコンのスタイル */
@@ -1155,17 +839,12 @@ export default {
 
 .large-circle {
   font-size: 0.6em;
-  color: #b83280;
+  color: var(--color-icon-pink);
 }
 
 .small-circle {
   font-size: 0.3em;
-  color: #b83280;
-}
-
-[data-bs-theme="dark"] .large-circle,
-[data-bs-theme="dark"] .small-circle {
-  color: #f472b6;
+  color: var(--color-icon-pink);
 }
 
 .top-right-circle {
@@ -1200,18 +879,13 @@ export default {
 
 .large-triangle {
   font-size: 1.2em;
-  color: #2b6cb0;
+  color: var(--color-icon-blue);
 }
 
 .small-triangle {
   font-size: 0.7em;
-  color: #2b6cb0;
+  color: var(--color-icon-blue);
   top: 0.2em;
-}
-
-[data-bs-theme="dark"] .large-triangle,
-[data-bs-theme="dark"] .small-triangle {
-  color: #60a5fa;
 }
 
 .label:hover .triangle-icon i {
@@ -1242,15 +916,10 @@ export default {
 }
 
 .recommendation-panel {
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--color-border);
   border-radius: 6px;
   padding: 0.85rem;
-  background: #ffffff;
-}
-
-[data-bs-theme="dark"] .recommendation-panel {
-  border-color: #4a5568;
-  background: #1f2937;
+  background: var(--color-bg-primary);
 }
 
 .recommendation-header {
@@ -1263,41 +932,28 @@ export default {
 
 .recommendation-header h2 {
   margin: 0;
-  color: #2d3748;
+  color: var(--color-text-primary);
   font-size: 1rem;
   font-weight: 700;
   line-height: 1.25;
 }
 
-[data-bs-theme="dark"] .recommendation-header h2 {
-  color: #e2e8f0;
-}
-
 .recommendation-header p {
   margin: 0.12rem 0 0;
-  color: #718096;
+  color: var(--color-text-muted);
   font-size: 0.78rem;
   line-height: 1.35;
-}
-
-[data-bs-theme="dark"] .recommendation-header p {
-  color: #a0aec0;
 }
 
 .current-slots {
   flex: 0 0 auto;
   border-radius: 999px;
   padding: 0.15rem 0.55rem;
-  background: #f1f5f9;
-  color: #4a5568;
+  background: var(--color-bg-tertiary);
+  color: var(--color-text-secondary);
   font-size: 0.78rem;
   font-weight: 600;
   white-space: nowrap;
-}
-
-[data-bs-theme="dark"] .current-slots {
-  background: #374151;
-  color: #e2e8f0;
 }
 
 .recommendation-conditions {
@@ -1311,38 +967,25 @@ export default {
   min-width: 0;
   border-radius: 6px;
   padding: 0.38rem 0.45rem;
-  background: #f8fafc;
-  border: 1px solid #e2e8f0;
-}
-
-[data-bs-theme="dark"] .condition-chip {
-  background: #2d3748;
-  border-color: #4a5568;
+  background: var(--color-bg-secondary);
+  border: 1px solid var(--color-border);
 }
 
 .condition-chip dt {
   margin: 0;
-  color: #718096;
+  color: var(--color-text-muted);
   font-size: 0.66rem;
   font-weight: 700;
   line-height: 1.15;
 }
 
-[data-bs-theme="dark"] .condition-chip dt {
-  color: #a0aec0;
-}
-
 .condition-chip dd {
   margin: 0.12rem 0 0;
-  color: #2d3748;
+  color: var(--color-text-primary);
   font-size: 0.78rem;
   font-weight: 700;
   line-height: 1.2;
   overflow-wrap: anywhere;
-}
-
-[data-bs-theme="dark"] .condition-chip dd {
-  color: #e2e8f0;
 }
 
 .recommendation-list {
@@ -1358,28 +1001,17 @@ export default {
   column-gap: 0.28rem;
   width: 100%;
   min-height: 42px;
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--color-border);
   border-radius: 6px;
   padding: 0.45rem 0.55rem;
-  background: #f8fafc;
-  color: #2d3748;
+  background: var(--color-bg-secondary);
+  color: var(--color-text-primary);
   text-align: left;
 }
 
-[data-bs-theme="dark"] .recommendation-item {
-  border-color: #4a5568;
-  background: #2d3748;
-  color: #e2e8f0;
-}
-
 .recommendation-item:hover {
-  border-color: #cbd5e0;
-  background: #eef2f7;
-}
-
-[data-bs-theme="dark"] .recommendation-item:hover {
-  border-color: #64748b;
-  background: #374151;
+  border-color: var(--color-border-hover);
+  background: var(--color-bg-tertiary);
 }
 
 .candidate-rank {
@@ -1390,30 +1022,21 @@ export default {
   width: 1.25rem;
   height: 1.25rem;
   border-radius: 999px;
-  background: #e2e8f0;
-  color: #4a5568;
+  background: var(--color-border);
+  color: var(--color-text-secondary);
   font-size: 0.68rem;
   font-weight: 700;
   line-height: 1;
 }
 
-[data-bs-theme="dark"] .candidate-rank {
-  background: #4a5568;
-  color: #e2e8f0;
-}
-
 .candidate-shot {
-  color: #2563eb;
+  color: var(--color-accent-blue);
   font-size: 0.82rem;
   font-weight: 700;
   line-height: 1.2;
   min-width: 0;
   text-align: center;
   overflow-wrap: anywhere;
-}
-
-[data-bs-theme="dark"] .candidate-shot {
-  color: #93c5fd;
 }
 
 .candidate-gear,
@@ -1449,27 +1072,18 @@ export default {
 .candidate-slots {
   justify-self: end;
   text-align: right;
-  color: #166534;
+  color: var(--color-accent-green);
   font-weight: 700;
-}
-
-[data-bs-theme="dark"] .candidate-slots {
-  color: #86efac;
 }
 
 .recommendation-empty {
   border-radius: 6px;
   padding: 0.7rem;
-  background: #f8fafc;
-  color: #718096;
+  background: var(--color-bg-secondary);
+  color: var(--color-text-muted);
   font-size: 0.86rem;
   line-height: 1.4;
   text-align: center;
-}
-
-[data-bs-theme="dark"] .recommendation-empty {
-  background: #2d3748;
-  color: #a0aec0;
 }
 
 @media (max-width: 576px) {
