@@ -22,6 +22,7 @@
               size="lg"
               name="weapon-type-radio"
               buttons
+              aria-label="ブキの種類を選択"
             />
           </BFormGroup>
         </BCol>
@@ -46,6 +47,7 @@
               size="lg"
               name="sub-number-radio"
               buttons
+              aria-label="サブウェポンの使用回数を選択"
             />
           </BFormGroup>
         </BCol>
@@ -70,6 +72,7 @@
               size="lg"
               name="unique-gear-radio"
               buttons
+              aria-label="特殊ギアを選択"
             ></BFormRadioGroup>
           </BFormGroup>
         </BCol>
@@ -98,6 +101,7 @@
             :max="gearLLimit"
             size="lg"
             inline
+            aria-label="メイン効率の大スロット数"
           ></BFormSpinbutton>
         </BCol>
         <BCol>
@@ -109,6 +113,7 @@
             max="9"
             size="lg"
             inline
+            aria-label="メイン効率の小スロット数"
           ></BFormSpinbutton>
         </BCol>
       </BRow>
@@ -133,6 +138,7 @@
             :max="gearLLimit"
             size="lg"
             inline
+            aria-label="サブ効率の大スロット数"
           ></BFormSpinbutton>
         </BCol>
         <BCol>
@@ -144,6 +150,7 @@
             max="9"
             size="lg"
             inline
+            aria-label="サブ効率の小スロット数"
           ></BFormSpinbutton>
         </BCol>
       </BRow>

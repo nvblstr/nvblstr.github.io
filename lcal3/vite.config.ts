@@ -18,6 +18,15 @@ export default defineConfig({
   build: {
     outDir: 'dist',
     assetsDir: 'assets',
-    sourcemap: false
+    sourcemap: false,
+    target: 'es2022',
+    rolldownOptions: {
+      output: {
+        manualChunks: {
+          vendor: ['vue'],
+          bootstrap: ['bootstrap', 'bootstrap-vue-next']
+        }
+      }
+    }
   }
 })
