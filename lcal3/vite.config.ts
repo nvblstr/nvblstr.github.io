@@ -22,11 +22,26 @@ export default defineConfig({
     target: 'es2022',
     rolldownOptions: {
       output: {
-        manualChunks: {
-          vendor: ['vue'],
-          bootstrap: ['bootstrap', 'bootstrap-vue-next']
-        }
-      }
-    }
+        codeSplitting: {
+          groups: [
+            {
+              name: 'vue',
+              test: /[\\/]node_modules[\\/]vue[\\/]/,
+              priority: 20,
+            },
+            {
+              name: 'bootstrap',
+              test: /[\\/]node_modules[\\/](bootstrap|bootstrap-vue-next)[\\/]/,
+              priority: 15,
+            },
+            {
+              name: 'vendor',
+              test: /[\\/]node_modules[\\/]/,
+              priority: 10,
+            },
+          ],
+        },
+      },
+    },
   }
 })

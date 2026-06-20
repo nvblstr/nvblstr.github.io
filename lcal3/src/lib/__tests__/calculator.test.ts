@@ -161,7 +161,9 @@ describe('generateGearCandidates', () => {
       'normal', 'none', 1, 10, 50, 0, 0
     );
     for (let i = 1; i < candidates.length; i++) {
-      expect(candidates[i].fireNumber).toBeLessThanOrEqual(candidates[i - 1].fireNumber);
+      const current = candidates[i]!;
+      const prev = candidates[i - 1]!;
+      expect(current.fireNumber).toBeLessThanOrEqual(prev.fireNumber);
     }
   });
 
@@ -170,7 +172,7 @@ describe('generateGearCandidates', () => {
       'normal', 'none', 1, 10, 50, 0, 0
     );
     if (candidates.length > 0) {
-      expect(candidates[0].rank).toBe(1);
+      expect(candidates[0]!.rank).toBe(1);
     }
   });
 });
