@@ -266,332 +266,107 @@
   </BContainer>
 </template>
 
-<script lang="ts">
+<script setup lang="ts">
 import { ref, computed, watch } from "vue";
 import "bootstrap-icons/font/bootstrap-icons.css";
 import { useDarkMode } from "../composables/useDarkMode";
+import {
+  type SubNumber,
+  type UniqueGear,
+  type WeaponType,
+  type GearCandidate,
+  type RecommendationCondition,
+  FIRE_NUMBER_MESSAGE,
+  NOT_ENOUGH_MESSAGE_1,
+  NOT_ENOUGH_MESSAGE_2,
+  MAIN_COST_BASE,
+  RECOMMENDATION_LIMIT,
+  WEAPON_TYPE_OPTIONS,
+  SUB_NUMBER_OPTIONS,
+  UNIQUE_GEAR_OPTIONS,
+} from "../types/calculator";
+import {
+  calcSubCostBase,
+  calcGearPowerIncrementByType,
+  calcGearLLimit,
+  calcMainCost,
+  calcSubCost,
+  calcFireNumber,
+  getOptionText,
+  generateGearCandidates,
+} from "../lib/calculator";
 
-// ===== 型定義 =====
-// サブ回数の型（0, 1, 2回）
-type SubNumber = 0 | 1 | 2;
-// 特殊ギアの型（なし、カムバック、ラストスパート）
-type UniqueGear = "none" | "comeback" | "lastspurt";
-// ブキの型（無印、ネオ）
-type WeaponType = "normal" | "neo";
-
-// サブ回数のオプション型
-interface SubNumberOption {
-  text: string;
-  value: SubNumber;
-  [key: string]: unknown;
-}
-
-// 特殊ギアのオプション型
-interface UniqueGearOption {
-  text: string;
-  value: UniqueGear;
-  [key: string]: unknown;
-}
-
-// ブキのオプション型
-interface WeaponTypeOption {
-  text: string;
-  value: WeaponType;
-  [key: string]: unknown;
-}
-
-interface GearCandidate {
-  id: string;
-  rank: number;
-  gearMainL: number;
-  gearMainS: number;
-  gearSubL: number;
-  gearSubS: number;
-  fireNumber: number;
-  ink: number;
-  largeSlots: number;
-  smallSlots: number;
-  totalSlots: number;
-  gearPowerCost: number;
-  gearPowerTotal: number;
-}
-
-interface RecommendationCondition {
-  label: string;
-  value: string;
-}
-
-// ===== 定数 =====
-// 表示メッセージ
-const FIRE_NUMBER_MESSAGE = "発撃てます";
-const NOT_ENOUGH_MESSAGE_1 = "今のギアパワーではサブウェポンは";
-const NOT_ENOUGH_MESSAGE_2 = "回使えません";
-
-// 基本コスト
-const MAIN_COST_BASE = 0.075; // メインブキの基本コスト
-const RECOMMENDATION_LIMIT = 5;
-
-// ===== リアクティブな状態 =====
-// ブキの選択値
+// ===== リアクティブな状態（コンポーネントスコープ） =====
 const weaponType = ref<WeaponType>("normal");
-// サブ回数の選択値
 const subNumber = ref<SubNumber>(0);
-// 特殊ギアの選択値
 const uniqueGear = ref<UniqueGear>("none");
-// メイン効率の大スロット値
 const gearMainL = ref<number>(0);
-// メイン効率の小スロット値
 const gearMainS = ref<number>(0);
-// サブ効率の大スロット値
 const gearSubL = ref<number>(0);
-// サブ効率の小スロット値
 const gearSubS = ref<number>(0);
 
 // ===== オプション設定 =====
-// ブキの選択肢
-const weaponTypeOptions: WeaponTypeOption[] = [
-  { text: "無印", value: "normal" },
-  { text: "ネオ", value: "neo" },
-];
+const weaponTypeOptions = WEAPON_TYPE_OPTIONS;
+const subNumberOptions = SUB_NUMBER_OPTIONS;
+const uniqueGearOptions = UNIQUE_GEAR_OPTIONS;
 
-// サブ回数の選択肢
-const subNumberOptions: SubNumberOption[] = [
-  { text: "0", value: 0 },
-  { text: "1", value: 1 },
-  { text: "2", value: 2 },
-];
+// ===== Computed: 基本値 =====
+const subCostBase = computed((): number => calcSubCostBase(weaponType.value));
 
-// 特殊ギアの選択肢
-const uniqueGearOptions: UniqueGearOption[] = [
-  { text: "なし", value: "none" },
-  { text: "カムバ", value: "comeback" },
-  { text: "ラスパ", value: "lastspurt" },
-];
+const calcGearPowerIncrement = computed((): number =>
+  calcGearPowerIncrementByType(uniqueGear.value),
+);
 
-// ===== 計算ロジック =====
+const gearLLimit = computed((): number => calcGearLLimit(uniqueGear.value));
 
-const calcSubCostBase = (weapon: WeaponType): number => {
-  return weapon === "normal" ? 0.7 : 0.6;
-};
+// ===== Computed: ギアパワー57表記 =====
+const gearMain57 = computed(
+  (): number =>
+    10 * gearMainL.value + 3 * gearMainS.value + calcGearPowerIncrement.value,
+);
 
-const calcGearPowerIncrementByType = (gear: UniqueGear): number => {
-  switch (gear) {
-    case "none":
-      return 0;
-    case "comeback":
-      return 10;
-    case "lastspurt":
-      return 18; /* ver.5.0.0から24→18に変更 */
-    default:
-      return 0;
-  }
-};
+const gearSub57 = computed(
+  (): number =>
+    10 * gearSubL.value + 3 * gearSubS.value + calcGearPowerIncrement.value,
+);
 
-const calcGearLLimit = (gear: UniqueGear): number => {
-  return gear === "none" ? 3 : 2;
-};
+// ===== Computed: インク消費量 =====
+const mainCost = computed((): number => calcMainCost(gearMain57.value));
 
-const getOptionText = <T extends string | number>(
-  options: { text: string; value: T }[],
-  value: T,
-): string => {
-  return (
-    options.find((option) => option.value === value)?.text ?? String(value)
-  );
-};
+const subCost = computed((): number =>
+  calcSubCost(weaponType.value, subCostBase.value, gearSub57.value),
+);
 
-const calcMainCost = (gearPower57: number): number => {
-  return (
-    (1 -
-      0.5 *
-        (0.033 * gearPower57 - 0.00027 * gearPower57 ** 2) **
-          (Math.log(0.6) / Math.log(0.5))) *
-    MAIN_COST_BASE
-  );
-};
+// ===== Computed: 発射回数・インク =====
+const fireNumber = computed((): number =>
+  calcFireNumber(mainCost.value, subCost.value, subNumber.value),
+);
 
-const calcSubCost = (
-  weapon: WeaponType,
-  subCostBase: number,
-  gearPower57: number,
-): number => {
-  const effectRate = weapon === "normal" ? 0.35 : 0.3;
-  return (
-    (1 - effectRate * (0.033 * gearPower57 - 0.00027 * gearPower57 ** 2)) *
-    subCostBase
-  );
-};
-
-// サブブキの基本コスト
-const subCostBase = computed((): number => {
-  return calcSubCostBase(weaponType.value);
-});
-
-// 特殊ギアによるギアパワー増加量の計算
-const calcGearPowerIncrement = computed((): number => {
-  return calcGearPowerIncrementByType(uniqueGear.value);
-});
-
-// メイン効率の57表記の計算
-const gearMain57 = computed((): number => {
-  return (
-    10 * gearMainL.value + 3 * gearMainS.value + calcGearPowerIncrement.value
-  );
-});
-
-// サブ効率の57表記の計算
-const gearSub57 = computed((): number => {
-  return (
-    10 * gearSubL.value + 3 * gearSubS.value + calcGearPowerIncrement.value
-  );
-});
-
-// メイン武器のインク消費量の計算
-const mainCost = computed((): number => {
-  return calcMainCost(gearMain57.value);
-});
-
-// サブ武器のインク消費量の計算
-const subCost = computed((): number => {
-  return calcSubCost(weaponType.value, subCostBase.value, gearSub57.value);
-});
-
-// 発射可能回数の計算
-const calcFireNumber = (
-  mainCost: number,
-  subCost: number,
-  subNumber: number,
-): number => {
-  return Math.floor((1 - subCost * subNumber) / mainCost);
-};
-
-// 発射可能回数の表示値
-const fireNumber = computed((): number => {
-  return calcFireNumber(mainCost.value, subCost.value, subNumber.value);
-});
-
-// ギアパワーによる発射回数増加量の計算
 const fireNumberIncrement = computed((): number => {
-  if (calcFireNumber(MAIN_COST_BASE, subCostBase.value, subNumber.value) >= 0) {
-    return (
-      fireNumber.value -
-      calcFireNumber(MAIN_COST_BASE, subCostBase.value, subNumber.value)
-    );
-  }
-  return fireNumber.value;
+  const baseFireNumber = calcFireNumber(
+    MAIN_COST_BASE,
+    subCostBase.value,
+    subNumber.value,
+  );
+  return fireNumber.value - baseFireNumber;
 });
 
-// 残りインク量の計算
-const ink = computed((): number => {
-  return 1 - subCost.value * subNumber.value;
-});
+const ink = computed((): number => 1 - subCost.value * subNumber.value);
 
-// 大スロットの上限値の計算
-const gearLLimit = computed((): number => {
-  return calcGearLLimit(uniqueGear.value);
-});
+// ===== Computed: スロット・GP =====
+const currentLargeSlots = computed(
+  (): number => gearMainL.value + gearSubL.value,
+);
 
-const currentLargeSlots = computed((): number => {
-  return Number(gearMainL.value) + Number(gearSubL.value);
-});
+const currentSmallSlots = computed(
+  (): number => gearMainS.value + gearSubS.value,
+);
 
-const currentSmallSlots = computed((): number => {
-  return Number(gearMainS.value) + Number(gearSubS.value);
-});
+const currentGearPowerCost = computed(
+  (): number => currentLargeSlots.value * 10 + currentSmallSlots.value * 3,
+);
 
-const currentGearPowerCost = computed((): number => {
-  return currentLargeSlots.value * 10 + currentSmallSlots.value * 3;
-});
-
-const generateGearCandidates = (
-  weapon: WeaponType,
-  unique: UniqueGear,
-  subCount: SubNumber,
-  targetFireNumber: number,
-  currentCost: number,
-  fixedSubL: number,
-  fixedSubS: number,
-): GearCandidate[] => {
-  const candidates: GearCandidate[] = [];
-  const largeLimit = calcGearLLimit(unique);
-  const increment = calcGearPowerIncrementByType(unique);
-  const baseSubCost = calcSubCostBase(weapon);
-
-  const maxMainL = subCount === 0 ? largeLimit - fixedSubL : largeLimit;
-  for (let mainL = 0; mainL <= maxMainL; mainL += 1) {
-    const subLStart = subCount === 0 ? fixedSubL : 0;
-    const subLLimit = subCount === 0 ? fixedSubL : largeLimit - mainL;
-    for (let subL = subLStart; subL <= subLLimit; subL += 1) {
-      const maxMainS = subCount === 0 ? 9 - fixedSubS : 9;
-      for (let mainS = 0; mainS <= maxMainS; mainS += 1) {
-        const subSStart = subCount === 0 ? fixedSubS : 0;
-        const subSLimit = subCount === 0 ? fixedSubS : 9 - mainS;
-        for (let subS = subSStart; subS <= subSLimit; subS += 1) {
-          const totalSlots = mainL + subL + mainS + subS;
-          const gearPowerCost = (mainL + subL) * 10 + (mainS + subS) * 3;
-          if (gearPowerCost > currentCost) {
-            continue;
-          }
-
-          const mainGear57 = 10 * mainL + 3 * mainS + increment;
-          const subGear57 = 10 * subL + 3 * subS + increment;
-          const candidateMainCost = calcMainCost(mainGear57);
-          const candidateSubCost = calcSubCost(weapon, baseSubCost, subGear57);
-          const candidateInk = 1 - candidateSubCost * subCount;
-          const candidateFireNumber = calcFireNumber(
-            candidateMainCost,
-            candidateSubCost,
-            subCount,
-          );
-
-          if (
-            candidateInk <= 0 ||
-            candidateFireNumber < targetFireNumber ||
-            (candidateFireNumber === targetFireNumber &&
-              gearPowerCost === currentCost)
-          ) {
-            continue;
-          }
-
-          candidates.push({
-            id: `${mainL}-${mainS}-${subL}-${subS}-${candidateFireNumber}`,
-            rank: 0,
-            gearMainL: mainL,
-            gearMainS: mainS,
-            gearSubL: subL,
-            gearSubS: subS,
-            fireNumber: candidateFireNumber,
-            ink: candidateInk,
-            largeSlots: mainL + subL,
-            smallSlots: mainS + subS,
-            totalSlots,
-            gearPowerCost,
-            gearPowerTotal: mainGear57 + subGear57,
-          });
-        }
-      }
-    }
-  }
-
-  return candidates
-    .sort((a, b) => {
-      if (a.fireNumber !== b.fireNumber) {
-        return b.fireNumber - a.fireNumber;
-      }
-      if (a.gearPowerCost !== b.gearPowerCost) {
-        return a.gearPowerCost - b.gearPowerCost;
-      }
-      if (a.largeSlots !== b.largeSlots) {
-        return a.largeSlots - b.largeSlots;
-      }
-      if (a.gearPowerTotal !== b.gearPowerTotal) {
-        return a.gearPowerTotal - b.gearPowerTotal;
-      }
-      return b.ink - a.ink;
-    })
-    .map((candidate, index) => ({ ...candidate, rank: index + 1 }));
-};
-
+// ===== Computed: 推奨ギア =====
 const recommendedGears = computed((): GearCandidate[] => {
   if (currentGearPowerCost.value === 0 || ink.value <= 0) {
     return [];
@@ -603,8 +378,8 @@ const recommendedGears = computed((): GearCandidate[] => {
     subNumber.value,
     fireNumber.value,
     currentGearPowerCost.value,
-    Number(gearSubL.value),
-    Number(gearSubS.value),
+    gearSubL.value,
+    gearSubS.value,
   ).slice(0, RECOMMENDATION_LIMIT);
 });
 
@@ -615,30 +390,29 @@ const recommendationSummary = computed((): string => {
   return `${fireNumber.value}発以上 / ${currentGearPowerCost.value}GP以下で比較`;
 });
 
-const recommendationConditions = computed((): RecommendationCondition[] => {
-  return [
-    {
-      label: "ブキ",
-      value: getOptionText(weaponTypeOptions, weaponType.value),
-    },
-    {
-      label: "サブ回数",
-      value: `${subNumber.value}回`,
-    },
-    {
-      label: "特殊ギア",
-      value: getOptionText(uniqueGearOptions, uniqueGear.value),
-    },
-    {
-      label: "探索対象",
-      value:
-        subNumber.value === 0
-          ? "メインのみ（サブ固定）"
-          : "メイン効率 + サブ効率",
-    },
-  ];
-});
+const recommendationConditions = computed((): RecommendationCondition[] => [
+  {
+    label: "ブキ",
+    value: getOptionText(weaponTypeOptions, weaponType.value),
+  },
+  {
+    label: "サブ回数",
+    value: `${subNumber.value}回`,
+  },
+  {
+    label: "特殊ギア",
+    value: getOptionText(uniqueGearOptions, uniqueGear.value),
+  },
+  {
+    label: "探索対象",
+    value:
+      subNumber.value === 0
+        ? "メインのみ（サブ固定）"
+        : "メイン効率 + サブ効率",
+  },
+]);
 
+// ===== Actions =====
 const applyRecommendedGear = (candidate: GearCandidate): void => {
   gearMainL.value = candidate.gearMainL;
   gearMainS.value = candidate.gearMainS;
@@ -647,12 +421,11 @@ const applyRecommendedGear = (candidate: GearCandidate): void => {
 };
 
 // ===== 表示メッセージ =====
-const fireNumberMessage = computed((): string => FIRE_NUMBER_MESSAGE);
-const notEnoughMessage1 = computed((): string => NOT_ENOUGH_MESSAGE_1);
-const notEnoughMessage2 = computed((): string => NOT_ENOUGH_MESSAGE_2);
+const fireNumberMessage = FIRE_NUMBER_MESSAGE;
+const notEnoughMessage1 = NOT_ENOUGH_MESSAGE_1;
+const notEnoughMessage2 = NOT_ENOUGH_MESSAGE_2;
 
-// ===== ウォッチャー =====
-// ブキタイプが変更された時の処理
+// ===== Watch: ダークモード切替 =====
 const { setDarkMode } = useDarkMode();
 
 watch(
@@ -663,74 +436,50 @@ watch(
   { flush: "sync" },
 );
 
-// メイン効率の大スロット値が変更された時の処理
-watch(gearMainL, () => {
-  if (Number(gearMainL.value) + Number(gearSubL.value) > gearLLimit.value) {
-    gearSubL.value = gearSubL.value - 1;
+// ===== Watch: スロット値の連動調整 =====
+// 小スロット: gearMainS + gearSubS <= 9
+// 一方が増加して上限超過時、もう一方を減らす
+watch(gearMainS, (newVal, oldVal) => {
+  if (oldVal == null) return;
+  if (newVal > oldVal && newVal + gearSubS.value > 9) {
+    gearSubS.value = Math.max(0, 9 - newVal);
   }
-});
+}, { flush: 'sync' });
 
-// サブ効率の大スロット値が変更された時の処理
-watch(gearSubL, () => {
-  if (Number(gearMainL.value) + Number(gearSubL.value) > gearLLimit.value) {
-    gearMainL.value = gearMainL.value - 1;
+watch(gearSubS, (newVal, oldVal) => {
+  if (oldVal == null) return;
+  if (newVal > oldVal && gearMainS.value + newVal > 9) {
+    gearMainS.value = Math.max(0, 9 - newVal);
   }
-});
+}, { flush: 'sync' });
 
-// メイン効率の小スロット値が変更された時の処理
-watch(gearMainS, () => {
-  if (Number(gearMainS.value) + Number(gearSubS.value) > 9) {
-    gearSubS.value = gearSubS.value - 1;
+// 大スロット: gearMainL + gearSubL <= gearLLimit
+watch(gearMainL, (newVal, oldVal) => {
+  if (oldVal == null) return;
+  if (newVal > oldVal && newVal + gearSubL.value > gearLLimit.value) {
+    gearSubL.value = Math.max(0, gearLLimit.value - newVal);
   }
-});
+}, { flush: 'sync' });
 
-// サブ効率の小スロット値が変更された時の処理
-watch(gearSubS, () => {
-  if (Number(gearMainS.value) + Number(gearSubS.value) > 9) {
-    gearMainS.value = gearMainS.value - 1;
+watch(gearSubL, (newVal, oldVal) => {
+  if (oldVal == null) return;
+  if (newVal > oldVal && gearMainL.value + newVal > gearLLimit.value) {
+    gearMainL.value = Math.max(0, gearLLimit.value - newVal);
   }
-});
+}, { flush: 'sync' });
 
-// 大スロットの上限値が変更された時の処理
-watch(gearLLimit, () => {
-  if (Number(gearMainL.value) + Number(gearSubL.value) > gearLLimit.value) {
-    if (Number(gearMainL.value) > Number(gearSubL.value)) {
-      gearMainL.value = gearMainL.value - 1;
+// 特殊ギア変更時にスロット値が上限を超えないよう調整
+watch(gearLLimit, (newLimit, oldLimit) => {
+  if (oldLimit == null) return;
+  const total = gearMainL.value + gearSubL.value;
+  if (total > newLimit) {
+    if (gearMainL.value >= gearSubL.value) {
+      gearMainL.value = Math.max(0, newLimit - gearSubL.value);
     } else {
-      gearSubL.value = gearSubL.value - 1;
+      gearSubL.value = Math.max(0, newLimit - gearMainL.value);
     }
   }
-});
-
-export default {
-  name: "Calculator",
-  setup() {
-    return {
-      weaponType,
-      weaponTypeOptions,
-      subNumber,
-      uniqueGear,
-      gearMainL,
-      gearMainS,
-      gearSubL,
-      gearSubS,
-      subNumberOptions,
-      uniqueGearOptions,
-      fireNumber,
-      fireNumberMessage,
-      fireNumberIncrement,
-      recommendedGears,
-      recommendationSummary,
-      recommendationConditions,
-      currentGearPowerCost,
-      applyRecommendedGear,
-      notEnoughMessage1,
-      notEnoughMessage2,
-      gearLLimit,
-      ink,
-    };
-  },
-};
+}, { flush: 'sync' });
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
