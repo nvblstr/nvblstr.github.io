@@ -670,63 +670,33 @@ watch(gearLLimit, (newLimit, oldLimit) => {
 
 /* 各セクションのラベルスタイル */
 .label-number {
-  background: linear-gradient(to bottom, #f0fdf4, #dcfce7);
-  color: #166534;
-  box-shadow: 0 2px 4px rgba(22, 101, 52, 0.15);
-}
-
-[data-bs-theme="dark"] .label-number {
-  background: linear-gradient(to bottom, #064e3b, #065f46);
-  color: #d1fae5;
-  box-shadow: 0 2px 4px rgba(6, 95, 70, 0.3);
+  background: linear-gradient(to bottom, var(--label-number-bg-from), var(--label-number-bg-to));
+  color: var(--label-number-text);
+  box-shadow: 0 2px 4px var(--label-number-shadow);
 }
 
 .label-weapon {
-  background: linear-gradient(to bottom, #fef2f2, #fee2e2);
-  color: #991b1b;
-  box-shadow: 0 2px 4px rgba(220, 38, 38, 0.15);
-}
-
-[data-bs-theme="dark"] .label-weapon {
-  background: linear-gradient(to bottom, #7f1d1d, #991b1b);
-  color: #fecaca;
-  box-shadow: 0 2px 4px rgba(153, 27, 27, 0.3);
+  background: linear-gradient(to bottom, var(--label-weapon-bg-from), var(--label-weapon-bg-to));
+  color: var(--label-weapon-text);
+  box-shadow: 0 2px 4px var(--label-weapon-shadow);
 }
 
 .label-unique {
-  background: linear-gradient(to bottom, #f7f0ff, #eee3ff);
-  color: #4c3c8a;
-  box-shadow: 0 2px 4px rgba(128, 90, 213, 0.15);
-}
-
-[data-bs-theme="dark"] .label-unique {
-  background: linear-gradient(to bottom, #312e81, #4338ca);
-  color: #e0e7ff;
-  box-shadow: 0 2px 4px rgba(67, 56, 202, 0.3);
+  background: linear-gradient(to bottom, var(--label-unique-bg-from), var(--label-unique-bg-to));
+  color: var(--label-unique-text);
+  box-shadow: 0 2px 4px var(--label-unique-shadow);
 }
 
 .label-main {
-  background: linear-gradient(to bottom, #fff0f5, #fde2e9);
-  color: #a32b7a;
-  box-shadow: 0 2px 4px rgba(237, 100, 166, 0.15);
-}
-
-[data-bs-theme="dark"] .label-main {
-  background: linear-gradient(to bottom, #831843, #be185d);
-  color: #fdebf6;
-  box-shadow: 0 2px 4px rgba(190, 24, 93, 0.3);
+  background: linear-gradient(to bottom, var(--label-main-bg-from), var(--label-main-bg-to));
+  color: var(--label-main-text);
+  box-shadow: 0 2px 4px var(--label-main-shadow);
 }
 
 .label-sub {
-  background: linear-gradient(to bottom, #e6f4ff, #b4d9f8);
-  color: #2c5a9e;
-  box-shadow: 0 2px 4px rgba(66, 153, 225, 0.15);
-}
-
-[data-bs-theme="dark"] .label-sub {
-  background: linear-gradient(to bottom, #1e3a8a, #2563eb);
-  color: #eef5fd;
-  box-shadow: 0 2px 4px rgba(37, 99, 235, 0.3);
+  background: linear-gradient(to bottom, var(--label-sub-bg-from), var(--label-sub-bg-to));
+  color: var(--label-sub-text);
+  box-shadow: 0 2px 4px var(--label-sub-shadow);
 }
 
 /* ラベルのホバーエフェクト */
@@ -769,35 +739,19 @@ watch(gearLLimit, (newLimit, oldLimit) => {
   text-align: center;
   overflow: hidden;
   text-overflow: ellipsis;
-  border-color: #e2e8f0 !important;
-  color: #4a5568 !important;
-}
-
-[data-bs-theme="dark"] :deep(.btn-radio label) {
-  border-color: #4a5568 !important;
-  color: #e2e8f0 !important;
+  border-color: var(--color-border) !important;
+  color: var(--color-text-secondary) !important;
 }
 
 :deep(.btn-radio label:hover) {
-  background-color: #f1f5f9 !important;
-  border-color: #cbd5e0 !important;
-}
-
-[data-bs-theme="dark"] :deep(.btn-radio label:hover) {
-  background-color: #2d3748 !important;
-  border-color: #4a5568 !important;
+  background-color: var(--color-bg-tertiary) !important;
+  border-color: var(--color-border-hover) !important;
 }
 
 :deep(.btn-radio input[type="radio"]:checked + label) {
-  background-color: #e2e8f0 !important;
-  border-color: #cbd5e0 !important;
-  color: #2d3748 !important;
-}
-
-[data-bs-theme="dark"] :deep(.btn-radio input[type="radio"]:checked + label) {
-  background-color: #4a5568 !important;
-  border-color: #2d3748 !important;
-  color: #e2e8f0 !important;
+  background-color: var(--color-border) !important;
+  border-color: var(--color-border-hover) !important;
+  color: var(--color-text-primary) !important;
 }
 
 /* スピンボタンのレイアウト */
@@ -813,60 +767,34 @@ watch(gearLLimit, (newLimit, oldLimit) => {
   text-align: center;
   padding: 0;
   width: 100%;
-  border-color: #e2e8f0;
-  color: #4a5568;
-}
-
-[data-bs-theme="dark"] :deep(.gear-spin .form-control) {
-  border-color: #4a5568;
-  color: #e2e8f0;
-  background-color: #2d3748;
+  border-color: var(--color-border);
+  color: var(--color-text-secondary);
+  background-color: var(--color-bg-primary);
 }
 
 :deep(.gear-spin .form-control:focus) {
   box-shadow: none;
-  border-color: #cbd5e0;
-  background-color: #f1f5f9;
-}
-
-[data-bs-theme="dark"] :deep(.gear-spin .form-control:focus) {
-  border-color: #4a5568;
-  background-color: #2d3748;
+  border-color: var(--color-border-hover);
+  background-color: var(--color-bg-tertiary);
 }
 
 :deep(.gear-spin .btn) {
-  color: #4a5568;
-  border-color: #e2e8f0;
-  background-color: #f1f5f9;
-}
-
-[data-bs-theme="dark"] :deep(.gear-spin .btn) {
-  color: #e2e8f0;
-  border-color: #4a5568;
-  background-color: #2d3748;
+  color: var(--color-text-secondary);
+  border-color: var(--color-border);
+  background-color: var(--color-bg-tertiary);
 }
 
 :deep(.gear-spin .btn:hover) {
-  background-color: #e2e8f0;
-  border-color: #cbd5e0;
-  color: #2d3748;
-}
-
-[data-bs-theme="dark"] :deep(.gear-spin .btn:hover) {
-  background-color: #4a5568;
-  border-color: #2d3748;
-  color: #e2e8f0;
+  background-color: var(--color-border);
+  border-color: var(--color-border-hover);
+  color: var(--color-text-primary);
 }
 
 /* スロットサイズのラベル */
 .slot-label {
-  color: #6c757d;
+  color: var(--color-text-subtle);
   text-align: center;
   display: block;
-}
-
-[data-bs-theme="dark"] .slot-label {
-  color: #a0aec0;
 }
 
 /* アイコンのスタイル */
@@ -904,17 +832,12 @@ watch(gearLLimit, (newLimit, oldLimit) => {
 
 .large-circle {
   font-size: 0.6em;
-  color: #b83280;
+  color: var(--color-icon-pink);
 }
 
 .small-circle {
   font-size: 0.3em;
-  color: #b83280;
-}
-
-[data-bs-theme="dark"] .large-circle,
-[data-bs-theme="dark"] .small-circle {
-  color: #f472b6;
+  color: var(--color-icon-pink);
 }
 
 .top-right-circle {
@@ -949,18 +872,13 @@ watch(gearLLimit, (newLimit, oldLimit) => {
 
 .large-triangle {
   font-size: 1.2em;
-  color: #2b6cb0;
+  color: var(--color-icon-blue);
 }
 
 .small-triangle {
   font-size: 0.7em;
-  color: #2b6cb0;
+  color: var(--color-icon-blue);
   top: 0.2em;
-}
-
-[data-bs-theme="dark"] .large-triangle,
-[data-bs-theme="dark"] .small-triangle {
-  color: #60a5fa;
 }
 
 .label:hover .triangle-icon i {
@@ -991,15 +909,10 @@ watch(gearLLimit, (newLimit, oldLimit) => {
 }
 
 .recommendation-panel {
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--color-border);
   border-radius: 6px;
   padding: 0.85rem;
-  background: #ffffff;
-}
-
-[data-bs-theme="dark"] .recommendation-panel {
-  border-color: #4a5568;
-  background: #1f2937;
+  background: var(--color-bg-primary);
 }
 
 .recommendation-header {
@@ -1012,41 +925,28 @@ watch(gearLLimit, (newLimit, oldLimit) => {
 
 .recommendation-header h2 {
   margin: 0;
-  color: #2d3748;
+  color: var(--color-text-primary);
   font-size: 1rem;
   font-weight: 700;
   line-height: 1.25;
 }
 
-[data-bs-theme="dark"] .recommendation-header h2 {
-  color: #e2e8f0;
-}
-
 .recommendation-header p {
   margin: 0.12rem 0 0;
-  color: #718096;
+  color: var(--color-text-muted);
   font-size: 0.78rem;
   line-height: 1.35;
-}
-
-[data-bs-theme="dark"] .recommendation-header p {
-  color: #a0aec0;
 }
 
 .current-slots {
   flex: 0 0 auto;
   border-radius: 999px;
   padding: 0.15rem 0.55rem;
-  background: #f1f5f9;
-  color: #4a5568;
+  background: var(--color-bg-tertiary);
+  color: var(--color-text-secondary);
   font-size: 0.78rem;
   font-weight: 600;
   white-space: nowrap;
-}
-
-[data-bs-theme="dark"] .current-slots {
-  background: #374151;
-  color: #e2e8f0;
 }
 
 .recommendation-conditions {
@@ -1060,38 +960,25 @@ watch(gearLLimit, (newLimit, oldLimit) => {
   min-width: 0;
   border-radius: 6px;
   padding: 0.38rem 0.45rem;
-  background: #f8fafc;
-  border: 1px solid #e2e8f0;
-}
-
-[data-bs-theme="dark"] .condition-chip {
-  background: #2d3748;
-  border-color: #4a5568;
+  background: var(--color-bg-secondary);
+  border: 1px solid var(--color-border);
 }
 
 .condition-chip dt {
   margin: 0;
-  color: #718096;
+  color: var(--color-text-muted);
   font-size: 0.66rem;
   font-weight: 700;
   line-height: 1.15;
 }
 
-[data-bs-theme="dark"] .condition-chip dt {
-  color: #a0aec0;
-}
-
 .condition-chip dd {
   margin: 0.12rem 0 0;
-  color: #2d3748;
+  color: var(--color-text-primary);
   font-size: 0.78rem;
   font-weight: 700;
   line-height: 1.2;
   overflow-wrap: anywhere;
-}
-
-[data-bs-theme="dark"] .condition-chip dd {
-  color: #e2e8f0;
 }
 
 .recommendation-list {
@@ -1107,28 +994,17 @@ watch(gearLLimit, (newLimit, oldLimit) => {
   column-gap: 0.28rem;
   width: 100%;
   min-height: 42px;
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--color-border);
   border-radius: 6px;
   padding: 0.45rem 0.55rem;
-  background: #f8fafc;
-  color: #2d3748;
+  background: var(--color-bg-secondary);
+  color: var(--color-text-primary);
   text-align: left;
 }
 
-[data-bs-theme="dark"] .recommendation-item {
-  border-color: #4a5568;
-  background: #2d3748;
-  color: #e2e8f0;
-}
-
 .recommendation-item:hover {
-  border-color: #cbd5e0;
-  background: #eef2f7;
-}
-
-[data-bs-theme="dark"] .recommendation-item:hover {
-  border-color: #64748b;
-  background: #374151;
+  border-color: var(--color-border-hover);
+  background: var(--color-bg-tertiary);
 }
 
 .candidate-rank {
@@ -1139,30 +1015,21 @@ watch(gearLLimit, (newLimit, oldLimit) => {
   width: 1.25rem;
   height: 1.25rem;
   border-radius: 999px;
-  background: #e2e8f0;
-  color: #4a5568;
+  background: var(--color-border);
+  color: var(--color-text-secondary);
   font-size: 0.68rem;
   font-weight: 700;
   line-height: 1;
 }
 
-[data-bs-theme="dark"] .candidate-rank {
-  background: #4a5568;
-  color: #e2e8f0;
-}
-
 .candidate-shot {
-  color: #2563eb;
+  color: var(--color-accent-blue);
   font-size: 0.82rem;
   font-weight: 700;
   line-height: 1.2;
   min-width: 0;
   text-align: center;
   overflow-wrap: anywhere;
-}
-
-[data-bs-theme="dark"] .candidate-shot {
-  color: #93c5fd;
 }
 
 .candidate-gear,
@@ -1198,27 +1065,18 @@ watch(gearLLimit, (newLimit, oldLimit) => {
 .candidate-slots {
   justify-self: end;
   text-align: right;
-  color: #166534;
+  color: var(--color-accent-green);
   font-weight: 700;
-}
-
-[data-bs-theme="dark"] .candidate-slots {
-  color: #86efac;
 }
 
 .recommendation-empty {
   border-radius: 6px;
   padding: 0.7rem;
-  background: #f8fafc;
-  color: #718096;
+  background: var(--color-bg-secondary);
+  color: var(--color-text-muted);
   font-size: 0.86rem;
   line-height: 1.4;
   text-align: center;
-}
-
-[data-bs-theme="dark"] .recommendation-empty {
-  background: #2d3748;
-  color: #a0aec0;
 }
 
 @media (max-width: 576px) {

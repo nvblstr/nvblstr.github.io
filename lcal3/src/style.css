@@ -3,6 +3,108 @@
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+
+  /* ===== 基本カラー ===== */
+  --color-bg-primary: #ffffff;
+  --color-bg-secondary: #f8fafc;
+  --color-bg-tertiary: #f1f5f9;
+  --color-text-primary: #2d3748;
+  --color-text-secondary: #4a5568;
+  --color-text-muted: #718096;
+  --color-text-subtle: #6c757d;
+  --color-border: #e2e8f0;
+  --color-border-hover: #cbd5e0;
+
+  /* ===== ラベル用カラー ===== */
+  /* サブ回数（緑） */
+  --label-number-bg-from: #f0fdf4;
+  --label-number-bg-to: #dcfce7;
+  --label-number-text: #166534;
+  --label-number-shadow: rgba(22, 101, 52, 0.15);
+
+  /* ブキ（赤） */
+  --label-weapon-bg-from: #fef2f2;
+  --label-weapon-bg-to: #fee2e2;
+  --label-weapon-text: #991b1b;
+  --label-weapon-shadow: rgba(220, 38, 38, 0.15);
+
+  /* 特殊ギア（紫） */
+  --label-unique-bg-from: #f7f0ff;
+  --label-unique-bg-to: #eee3ff;
+  --label-unique-text: #4c3c8a;
+  --label-unique-shadow: rgba(128, 90, 213, 0.15);
+
+  /* メイン効率（ピンク） */
+  --label-main-bg-from: #fff0f5;
+  --label-main-bg-to: #fde2e9;
+  --label-main-text: #a32b7a;
+  --label-main-shadow: rgba(237, 100, 166, 0.15);
+
+  /* サブ効率（青） */
+  --label-sub-bg-from: #e6f4ff;
+  --label-sub-bg-to: #b4d9f8;
+  --label-sub-text: #2c5a9e;
+  --label-sub-shadow: rgba(66, 153, 225, 0.15);
+
+  /* ===== アイコンカラー ===== */
+  --color-icon-pink: #b83280;
+  --color-icon-blue: #2b6cb0;
+
+  /* ===== アクセントカラー ===== */
+  --color-accent-blue: #2563eb;
+  --color-accent-green: #166534;
+}
+
+[data-bs-theme="dark"] {
+  /* ===== 基本カラー（ダーク） ===== */
+  --color-bg-primary: #1f2937;
+  --color-bg-secondary: #2d3748;
+  --color-bg-tertiary: #374151;
+  --color-text-primary: #e2e8f0;
+  --color-text-secondary: #e2e8f0;
+  --color-text-muted: #a0aec0;
+  --color-text-subtle: #a0aec0;
+  --color-border: #4a5568;
+  --color-border-hover: #64748b;
+
+  /* ===== ラベル用カラー（ダーク） ===== */
+  /* サブ回数（緑） */
+  --label-number-bg-from: #064e3b;
+  --label-number-bg-to: #065f46;
+  --label-number-text: #d1fae5;
+  --label-number-shadow: rgba(6, 95, 70, 0.3);
+
+  /* ブキ（赤） */
+  --label-weapon-bg-from: #7f1d1d;
+  --label-weapon-bg-to: #991b1b;
+  --label-weapon-text: #fecaca;
+  --label-weapon-shadow: rgba(153, 27, 27, 0.3);
+
+  /* 特殊ギア（紫） */
+  --label-unique-bg-from: #312e81;
+  --label-unique-bg-to: #4338ca;
+  --label-unique-text: #e0e7ff;
+  --label-unique-shadow: rgba(67, 56, 202, 0.3);
+
+  /* メイン効率（ピンク） */
+  --label-main-bg-from: #831843;
+  --label-main-bg-to: #be185d;
+  --label-main-text: #fdebf6;
+  --label-main-shadow: rgba(190, 24, 93, 0.3);
+
+  /* サブ効率（青） */
+  --label-sub-bg-from: #1e3a8a;
+  --label-sub-bg-to: #2563eb;
+  --label-sub-text: #eef5fd;
+  --label-sub-shadow: rgba(37, 99, 235, 0.3);
+
+  /* ===== アイコンカラー（ダーク） ===== */
+  --color-icon-pink: #f472b6;
+  --color-icon-blue: #60a5fa;
+
+  /* ===== アクセントカラー（ダーク） ===== */
+  --color-accent-blue: #93c5fd;
+  --color-accent-green: #86efac;
 }
 
 #app {
