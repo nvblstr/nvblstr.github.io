@@ -75,7 +75,7 @@ cp "$PUBLISH_DIR/.nojekyll" "$WORKTREE_DIR/"
 
 # コミットとプッシュ
 git add -A
-git commit -m "deploy"
+git -c user.name="li" -c user.email="170cm.kure.kure@gmail.com" commit -m "deploy"
 git push "$REMOTE_NAME" "HEAD:$PAGES_BRANCH"
 
 # worktreeの削除
